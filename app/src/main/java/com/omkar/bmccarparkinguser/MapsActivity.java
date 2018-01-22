@@ -2,7 +2,7 @@ package com.omkar.bmccarparkinguser;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -25,12 +25,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,android.location.LocationListener, com.google.android.gms.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>,GoogleMap.OnInfoWindowClickListener {
     //region LOCATION VARIABLES
     private static final String TAG = "Maps Activity";
     private LocationManager mLocationManager = null;
@@ -91,8 +92,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
             mLastLocation = new Location(LocationManager.GPS_PROVIDER);
-            buildLocationSettingsRequest();
-            checkLocationSettings();
         }
     }
 
@@ -122,10 +121,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-       // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.setOnInfoWindowClickListener(this);
+
     }
 
     @Override
@@ -172,6 +169,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "Firing onLocationChanged..............................................");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mLastLocation = location;
+        Log.i("Location" , "Latitude : " + mLastLocation.getLatitude() + " Longitude  : " + mLastLocation.getLongitude());
+
     }
 
     @Override
@@ -181,12 +180,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        Toast.makeText(this, "Gps Enable", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        Toast.makeText(this, "Gps Disable", Toast.LENGTH_SHORT).show();
+        buildLocationSettingsRequest();
+        checkLocationSettings();
     }
 
     @Override
@@ -207,7 +208,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                LatLng UserLocation = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+                //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                //mMap.addCircle(new CircleOptions().center(sydney).strokeColor(Color.RED).radius(25));
 
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UserLocation,16));
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(MapsActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.i(TAG, "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                break;
+        }
     }
     private boolean isGooglePlayServicesAvailable() {
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -269,5 +296,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         PendingResult<Status> pendingResult = LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
         Log.d(TAG, "Location update started ..............: ");
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
     }
 }
