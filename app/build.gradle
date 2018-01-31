@@ -9,6 +9,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -30,8 +32,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.clans:fab:1.6.4'
-    compile('com.afollestad:bridge:5.1.2') {
-        exclude group: 'org.json', module: 'json'
-    }
+    compile 'com.android.volley:volley:1.1.0'
+    compile 'com.googlecode.json-simple:json-simple:1.1'
 
 }

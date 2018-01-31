@@ -1,6 +1,5 @@
 package com.omkar.bmccarparkinguser;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -27,8 +26,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.afollestad.bridge.Request;
+import org.json.*;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,12 +47,14 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -57,7 +63,7 @@ import java.util.Map;
 
 public class MapDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, android.location.LocationListener, com.google.android.gms.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnInfoWindowClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.InfoWindowAdapter {
     //region LOCATION VARIABLES
     private static final String TAG = "Maps Activity";
     private LocationManager mLocationManager = null;
@@ -132,6 +138,7 @@ public class MapDrawerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        fetchParkingSpot();
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -165,12 +172,10 @@ public class MapDrawerActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             return true;
         }
@@ -183,21 +188,6 @@ public class MapDrawerActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -209,7 +199,6 @@ public class MapDrawerActivity extends AppCompatActivity
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mLastLocation = location;
         Log.i("Location", "Latitude : " + mLastLocation.getLatitude() + " Longitude  : " + mLastLocation.getLongitude());
-
     }
 
     @Override
@@ -251,9 +240,9 @@ public class MapDrawerActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        bmcMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(19.117540, 72.880058)).title("BMC CAR PARKING SPOT"));
-        bmcMarker.showInfoWindow();
-        mMap.setOnInfoWindowClickListener(this);
+       // bmcMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(19.117540, 72.880058)).title("BMC CAR PARKING SPOT"));
+       // bmcMarker.showInfoWindow();
+       /// mMap.setOnInfoWindowClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -313,9 +302,7 @@ public class MapDrawerActivity extends AppCompatActivity
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
                 LatLng UserLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                //mMap.addCircle(new CircleOptions().center(sydney).strokeColor(Color.RED).radius(25));
+
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UserLocation, 16));
                 break;
@@ -379,8 +366,7 @@ public class MapDrawerActivity extends AppCompatActivity
         super.onStart();
         Log.d(TAG, "onStart fired ..............");
         mGoogleApiClient.connect();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+
 
     }
 
@@ -405,15 +391,51 @@ public class MapDrawerActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        if (marker.equals(bmcMarker)) {
-            String format = "geo:0,0?q=19.117540,72.880058( Location title)";
-            Uri uri = Uri.parse(format);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
 
-        }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+
+        String format = "geo:0,0?q=19.117540,72.880058( Location title)";
+        Uri uri = Uri.parse(format);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        return null;
+    }
+
+
+    private void fetchParkingSpot()
+    {
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://192.168.1.3:987/Service.svc/GetSpotDetails";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = (JSONObject) new JSONParser().parse(response);
+
+
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        Log.i("Response",response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 }
