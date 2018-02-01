@@ -44,7 +44,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapDrawerActivity"
+            android:name=".Activity.MapDrawerActivity"
             android:label="@string/title_activity_map_drawer"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

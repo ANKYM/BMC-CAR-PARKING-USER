@@ -1,13 +1,14 @@
-package com.omkar.bmccarparkinguser;
+package com.omkar.bmccarparkinguser.Activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,13 +27,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import org.json.*;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,21 +43,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
+import com.omkar.bmccarparkinguser.Model.ParkingSpot;
+import com.omkar.bmccarparkinguser.R;
 
-import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MapDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, android.location.LocationListener, com.google.android.gms.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.InfoWindowAdapter {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
     //region LOCATION VARIABLES
     private static final String TAG = "Maps Activity";
     private LocationManager mLocationManager = null;
@@ -96,6 +99,7 @@ public class MapDrawerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setTitle("BMC CAR PARKING");
         setSupportActionBar(toolbar);
         if (!isGooglePlayServicesAvailable()) {
             finish();
@@ -138,7 +142,7 @@ public class MapDrawerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        fetchParkingSpot();
+        new Fetch_Parking_Spot().execute();
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -208,13 +212,12 @@ public class MapDrawerActivity extends AppCompatActivity
 
     @Override
     public void onProviderEnabled(String provider) {
-        Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
 
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Disable", Snackbar.LENGTH_LONG).show();
+
         buildLocationSettingsRequest();
         checkLocationSettings();
     }
@@ -240,9 +243,6 @@ public class MapDrawerActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-       // bmcMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(19.117540, 72.880058)).title("BMC CAR PARKING SPOT"));
-       // bmcMarker.showInfoWindow();
-       /// mMap.setOnInfoWindowClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -256,6 +256,33 @@ public class MapDrawerActivity extends AppCompatActivity
         }
         mMap.setMyLocationEnabled(true);
         mMap.setTrafficEnabled(true);
+
+
+        LatLng snowqualmie = new LatLng(19.118150, 72.888694);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(snowqualmie)
+                .title("Snowqualmie Falls")
+                .snippet("Snoqualmie Falls is located 25 miles east of Seattle.")
+                .icon(BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_BLUE));
+
+        ParkingSpot info = new ParkingSpot();
+        info.setSpotName("snowqualmie");
+        info.setSpotID("1");
+        info.setAddress("Powai");
+        info.setLat("19.118150");
+        info.setLongi("72.888694");
+        info.setParkCapicity(20);
+        info.setParkCapicity(12);
+
+        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+
+        Marker m = mMap.addMarker(markerOptions);
+        m.setTag(info);
+        //m.showInfoWindow();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(snowqualmie));
     }
 
     @Override
@@ -302,8 +329,6 @@ public class MapDrawerActivity extends AppCompatActivity
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
                 LatLng UserLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-
-
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UserLocation, 16));
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -393,49 +418,112 @@ public class MapDrawerActivity extends AppCompatActivity
 
 
 
-    @Override
-    public View getInfoWindow(Marker marker) {
-        return null;
-    }
+
+
+
+//    private void fetchParkingSpot()
+//    {
+//
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        String url ="http://192.168.1.3:987/Service.svc/GetSpotDetails";
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//                            JSONObject json = (JSONObject) new JSONParser().parse(response);
+//
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        Log.i("Response",response);
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//            }
+//        });
+//// Add the request to the RequestQueue.
+//        queue.add(stringRequest);
+//    }
 
     @Override
-    public View getInfoContents(Marker marker) {
-
-        String format = "geo:0,0?q=19.117540,72.880058( Location title)";
-        Uri uri = Uri.parse(format);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        return null;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+              case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Disable", Snackbar.LENGTH_LONG).show();
+                        finish();
+                        break;
+                }
+                break;
+        }
     }
 
-
-    private void fetchParkingSpot()
-    {
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.1.3:987/Service.svc/GetSpotDetails";
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject json = (JSONObject) new JSONParser().parse(response);
+    private class Fetch_Parking_Spot extends AsyncTask<String , Void, String> {
+        ArrayList<ParkingSpot> all_parking_spots = new ArrayList<>();
 
 
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+        @Override
+        protected void onPreExecute() {
+            if (!isFinishing()) {
+                //dialog = ProgressDialog.show(Complaint_List_Activity.this, getResources().getString(R.string.wait_Heading), getResources().getString(R.string.Update_message3), true);
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+                SoapObject request = new SoapObject(ServiceDetails.NAMESPACE, ServiceDetails.GET_SPOT_DETAILS);
+                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envelope.dotNet = true;
+                envelope.setOutputSoapObject(request);
+                HttpTransportSE androidHttpTransport = new HttpTransportSE( ServiceDetails._URL, 80000);
+                try {
+                    androidHttpTransport.call(ServiceDetails.GET_SPOT_DETAILS_SOAP_ACTION, envelope);
+                    SoapObject root = (SoapObject) envelope.bodyIn;
+                    SoapObject t = (SoapObject) root.getProperty(0);
+                    SoapObject t1 = (SoapObject) t.getProperty(1);
+
+                    if (t1.toString().equals("anyType{}")) {
+                        return "false";
+                    } else {
+                        SoapObject t2 = (SoapObject) t1.getProperty(0);
+                        for (int i = 0; i < t2.getPropertyCount(); i++) {
+                            SoapObject parking_spot = (SoapObject) t2.getProperty(i);
+                            String spot_id =  parking_spot.getProperty(0).toString();
+                            String spot_name = parking_spot.getProperty(1).toString();
+                            String spot_address =  parking_spot.getProperty(2).toString();
+                            String spot_lat =  parking_spot.getProperty(3).toString();
+                            String spot_long = parking_spot.getProperty(4).toString();
+                            int  spot_park_capacity = Integer.parseInt(parking_spot.getProperty(5).toString());
+                            int  spot_park_vehicle = Integer.parseInt(parking_spot.getProperty(6).toString());
+                            all_parking_spots.add(new ParkingSpot(spot_id,spot_name,spot_address,spot_lat,spot_long,spot_park_capacity,spot_park_vehicle));
                         }
 
-                        Log.i("Response",response);
+                        return "true";
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                } catch (Exception e) {
+                    return "false";
+                }
+
+        }
+
+        @Override
+        protected void onPostExecute(String b) {
+            if(b.equals("true"))
+            {
+                for(int i = 0 ; i<all_parking_spots.size();i++){
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()),Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName()));
+
+                }
             }
-        });
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        }
     }
 }

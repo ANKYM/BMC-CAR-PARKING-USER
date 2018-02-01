@@ -1,4 +1,4 @@
-package com.omkar.bmccarparkinguser;
+package com.omkar.bmccarparkinguser.Model;
 
 /**
  * Created by omkar on 31-Jan-18.
@@ -21,6 +21,9 @@ public class ParkingSpot {
         this.longi = longi;
         this.parkCapicity = parkCapicity;
         this.parkVehicle = parkVehicle;
+    }
+
+    public ParkingSpot() {
     }
 
     public String getSpotID() {
