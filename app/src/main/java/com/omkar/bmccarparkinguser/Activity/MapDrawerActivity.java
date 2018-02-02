@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -65,6 +67,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+
 public class MapDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, android.location.LocationListener, com.google.android.gms.location.LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener {
@@ -81,7 +85,7 @@ public class MapDrawerActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     protected LocationSettingsRequest mLocationSettingsRequest;
     String mLastUpdateTime;
-    Marker bmcMarker;
+
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -91,6 +95,10 @@ public class MapDrawerActivity extends AppCompatActivity
     }
 
     //endregion
+
+    LinearLayout layoutBottomSheet;
+    BottomSheetBehavior sheetBehavior;
+
     private GoogleMap mMap;
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.SEND_SMS, android.Manifest.permission.READ_EXTERNAL_STORAGE};
