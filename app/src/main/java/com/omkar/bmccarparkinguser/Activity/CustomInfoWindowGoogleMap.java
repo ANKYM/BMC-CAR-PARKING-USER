@@ -26,6 +26,7 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter  {
 
     @Override
     public View getInfoWindow(Marker marker) {
+
         return null;
     }
 
@@ -42,20 +43,20 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter  {
 
         ParkingSpot parkingSpot = (ParkingSpot) marker.getTag();
         title_tv.setText(parkingSpot.getSpotName());
-        parking_space_tv.setText(parkingSpot.getParkCapicity()+"");
+        parking_space_tv.setText((parkingSpot.getParkCapicity() - parkingSpot.getParkVehicle())+"");
         address_tv.setText(parkingSpot.getAddress());
 
 
         route_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Route Clicked",Toast.LENGTH_LONG);
+                Toast.makeText(context,"Route Clicked",Toast.LENGTH_LONG).show();
             }
         });
         button_book.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Book Clicked",Toast.LENGTH_LONG);
+                Toast.makeText(context,"Book Clicked",Toast.LENGTH_LONG).show();
             }
         });
         return view;
