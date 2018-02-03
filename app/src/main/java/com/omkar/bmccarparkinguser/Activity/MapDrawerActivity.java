@@ -271,18 +271,18 @@ public class MapDrawerActivity extends AppCompatActivity
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
 
-                DownloadTask downloadTask = new DownloadTask();
-
-// Start downloading json data from Google Directions API
-                downloadTask.execute(url);            }
+            }
         });
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Snackbar.make(getWindow().getDecorView().getRootView(), "Marker Click", Snackbar.LENGTH_LONG).show();
+                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                downloadTask.execute(url);
                 return false;
             }
         });
