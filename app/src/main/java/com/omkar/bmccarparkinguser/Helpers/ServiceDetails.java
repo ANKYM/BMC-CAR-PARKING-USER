@@ -8,7 +8,7 @@ public class ServiceDetails {
 
     public final static String NAMESPACE = "http://tempuri.org/";
     public final static String _URL = "http://192.168.1.6:4545/webservice.asmx";
-    public final static String SOAP_ACTION = "http://tempuri.org/";
+    private final static String SOAP_ACTION = "http://tempuri.org/";
 
     public final static String GET_SPOT_DETAILS = "GetSpotDetails";
 
