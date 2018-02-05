@@ -19,6 +19,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -53,6 +54,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
+import com.omkar.bmccarparkinguser.Fragment.InfoFragment;
 import com.omkar.bmccarparkinguser.Model.ParkingSpot;
 import com.omkar.bmccarparkinguser.R;
 
@@ -149,10 +151,13 @@ public class MapDrawerActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
-                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-                        coordinate, 16);
-                mMap.animateCamera(location);
+//                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
+//                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+//                        coordinate, 16);
+//                mMap.animateCamera(location);
+
+                bottomSheetLayout.showWithSheetView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.fragment_my, bottomSheetLayout, false));
+
             }
         });
 
