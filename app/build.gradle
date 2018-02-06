@@ -33,6 +33,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.clans:fab:1.6.4'
     implementation files('libs/ksoap2-android-2.5.2.jar')
-    compile 'com.flipboard:bottomsheet-core:1.5.3'
-    compile 'com.flipboard:bottomsheet-commons:1.5.3' // optional
+    compile 'com.cocosw:bottomsheet:1.+@aar'
+
+
 }
