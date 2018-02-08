@@ -4,12 +4,17 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +35,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.flipboard.bottomsheet.BottomSheetLayout;
+import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,13 +56,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
-import com.omkar.bmccarparkinguser.Fragment.InfoFragment;
 import com.omkar.bmccarparkinguser.Model.ParkingSpot;
 import com.omkar.bmccarparkinguser.R;
 
@@ -79,6 +87,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.graphics.Color.RED;
 
 
 public class MapDrawerActivity extends AppCompatActivity
@@ -113,8 +123,6 @@ public class MapDrawerActivity extends AppCompatActivity
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.SEND_SMS, android.Manifest.permission.READ_EXTERNAL_STORAGE};
 
-    protected BottomSheetLayout bottomSheetLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,8 +149,6 @@ public class MapDrawerActivity extends AppCompatActivity
             mLastLocation = new Location(LocationManager.GPS_PROVIDER);
         }
 
-        bottomSheetLayout = (BottomSheetLayout) findViewById(R.id.bottomsheet);
-
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -151,12 +157,10 @@ public class MapDrawerActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
-//                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-//                        coordinate, 16);
-//                mMap.animateCamera(location);
-
-                bottomSheetLayout.showWithSheetView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.fragment_my, bottomSheetLayout, false));
+                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
+                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                        coordinate, 16);
+                mMap.animateCamera(location);
 
             }
         });
@@ -283,11 +287,35 @@ public class MapDrawerActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
+//                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
+//
+//                DownloadTask downloadTask = new DownloadTask();
+//
+//                downloadTask.execute(url);
 
-                DownloadTask downloadTask = new DownloadTask();
+                try {
+                    final ParkingSpot parkingSpot = (ParkingSpot) marker.getTag();
+                    int parking_avail;
+                    parking_avail = parkingSpot.getParkCapicity() - parkingSpot.getParkVehicle();
+                    new BottomSheet.Builder(MapDrawerActivity.this).title(parkingSpot.getSpotName() + " Parking available : " + parking_avail).sheet(R.menu.spot_menu_list).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.book:
+                                    break;
+                                case R.id.navigate:
+                                    Uri gmmIntentUri = Uri.parse("google.navigation:q="+parkingSpot.getLat()+","+parkingSpot.getLongi());
+                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                    mapIntent.setPackage("com.google.android.apps.maps");
+                                    startActivity(mapIntent);
+                                    break;
+                            }
+                        }
+                    }).show();
+                } catch (Exception ex) {
+                    Log.e("Marker Cliked error", ex.toString());
+                }
 
-                downloadTask.execute(url);
                 return false;
             }
         });
@@ -502,18 +530,14 @@ public class MapDrawerActivity extends AppCompatActivity
             if (b.equals("true")) {
                 List<Marker> all_spot_markes = new ArrayList<>();
                 for (int i = 0; i < all_parking_spots.size(); i++) {
-
-                    // CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(MapDrawerActivity.this);
-                    //mMap.setInfoWindowAdapter(customInfoWindow);
-                    //  mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName())).setTag(all_parking_spots.get(i));
-                    all_spot_markes.add(mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName())));
-                    // mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName())).showInfoWindow();
-                    MarkerOptions options = new MarkerOptions()
-                            .title(all_parking_spots.get(i).getSpotName())
-                            .position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi())));
-
-                    Marker sourceMarker = mMap.addMarker(options);
-                    sourceMarker.showInfoWindow();
+                    View marker_view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
+                    TextView parking_space_avail = (TextView) marker_view.findViewById(R.id.parking_space_avail);
+                    parking_space_avail.setText((all_parking_spots.get(i).getParkCapicity() - all_parking_spots.get(i).getParkVehicle()) + "");
+                    MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName()).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapDrawerActivity.this, marker_view)));
+                    Marker marker = mMap.addMarker(markerOptions);
+                    marker.setTag(all_parking_spots.get(i));
+                    all_spot_markes.add(marker);
+                    marker.showInfoWindow();
 
                 }
                 final CameraUpdate cu;
@@ -539,7 +563,20 @@ public class MapDrawerActivity extends AppCompatActivity
             }
         }
     }
+    public static Bitmap createDrawableFromView(Context context, View view) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
 
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        return bitmap;
+    }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
