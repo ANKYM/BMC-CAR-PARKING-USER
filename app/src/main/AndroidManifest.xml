@@ -47,6 +47,8 @@
             android:name=".Activity.MapDrawerActivity"
             android:label="@string/title_activity_map_drawer"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".Activity.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

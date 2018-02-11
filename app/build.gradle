@@ -34,4 +34,5 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.cocosw:bottomsheet:1.+@aar'
     implementation files('libs/ksoap2-android-2.5.2.jar')
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 }

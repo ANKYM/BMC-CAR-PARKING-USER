@@ -87,7 +87,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.graphics.Color.RED;
 
 
 public class MapDrawerActivity extends AppCompatActivity
