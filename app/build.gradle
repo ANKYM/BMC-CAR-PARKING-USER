@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.omkar.bmccarparkinguser"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -32,8 +32,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.clans:fab:1.6.4'
-    implementation files('libs/ksoap2-android-2.5.2.jar')
     compile 'com.cocosw:bottomsheet:1.+@aar'
-
-
+    implementation files('libs/ksoap2-android-2.5.2.jar')
 }
