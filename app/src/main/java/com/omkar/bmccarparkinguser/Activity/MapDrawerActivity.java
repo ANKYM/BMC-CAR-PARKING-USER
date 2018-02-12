@@ -15,7 +15,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -61,6 +60,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
 import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.Model.ParkingSpot;
 import com.omkar.bmccarparkinguser.R;
@@ -88,10 +88,9 @@ import java.util.List;
 import java.util.Map;
 
 
-
 public class MapDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, android.location.LocationListener, com.google.android.gms.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener ,ConnectionDetector.ConnectionReceiverListener{
     //region LOCATION VARIABLES
     private static final String TAG = "Maps Activity";
     private LocationManager mLocationManager = null;
@@ -118,8 +117,6 @@ public class MapDrawerActivity extends AppCompatActivity
 
 
     private GoogleMap mMap;
-    int PERMISSION_ALL = 1;
-    String[] PERMISSIONS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.SEND_SMS, android.Manifest.permission.READ_EXTERNAL_STORAGE};
 
 
     @Override
@@ -138,14 +135,11 @@ public class MapDrawerActivity extends AppCompatActivity
                 .addOnConnectionFailedListener(this)
                 .build();
         mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        if (!hasPermissions(MapDrawerActivity.this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(MapDrawerActivity.this, PERMISSIONS, PERMISSION_ALL);
-        } else {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            }
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
-            mLastLocation = new Location(LocationManager.GPS_PROVIDER);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
+        mLastLocation = new Location(LocationManager.GPS_PROVIDER);
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -171,21 +165,9 @@ public class MapDrawerActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        new Fetch_Parking_Spot().execute();
+        // new Fetch_Parking_Spot().execute();
     }
 
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                int i = ActivityCompat.checkSelfPermission(context, permission);
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     @Override
     public void onBackPressed() {
@@ -207,7 +189,7 @@ public class MapDrawerActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.refresh) {
-            new Fetch_Parking_Spot().execute();
+            //new Fetch_Parking_Spot().execute();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -230,31 +212,42 @@ public class MapDrawerActivity extends AppCompatActivity
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
+    Log.i("yop","top");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
+        Log.i("yop","top");
+
     }
 
     @Override
     public void onProviderDisabled(String provider) {
         buildLocationSettingsRequest();
         checkLocationSettings();
+        Log.i("yop","top");
+
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected - isConnected ...............: " + mGoogleApiClient.isConnected());
         startLocationUpdates();
+        Log.i("yop","top");
+
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.i("yop","top");
+
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "Connection failed: " + connectionResult.toString());
+        Log.i("yop","top");
+
     }
 
 
@@ -278,18 +271,18 @@ public class MapDrawerActivity extends AppCompatActivity
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-
+//                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
+//
+//                DownloadTask downloadTask = new DownloadTask();
+//
+//                downloadTask.execute(url);
             }
         });
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-//                String url = getDirectionsUrl(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), marker.getPosition());
-//
-//                DownloadTask downloadTask = new DownloadTask();
-//
-//                downloadTask.execute(url);
+
 
                 try {
                     final ParkingSpot parkingSpot = (ParkingSpot) marker.getTag();
@@ -302,7 +295,7 @@ public class MapDrawerActivity extends AppCompatActivity
                                 case R.id.book:
                                     break;
                                 case R.id.navigate:
-                                    Uri gmmIntentUri = Uri.parse("google.navigation:q="+parkingSpot.getLat()+","+parkingSpot.getLongi());
+                                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + parkingSpot.getLat() + "," + parkingSpot.getLongi());
                                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                     mapIntent.setPackage("com.google.android.apps.maps");
                                     startActivity(mapIntent);
@@ -457,7 +450,7 @@ public class MapDrawerActivity extends AppCompatActivity
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
-                        new Fetch_Parking_Spot().execute();
+                        //new Fetch_Parking_Spot().execute();
                         break;
                     case Activity.RESULT_CANCELED:
                         Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Disable", Snackbar.LENGTH_LONG).show();
@@ -472,6 +465,18 @@ public class MapDrawerActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         Log.i("Marker", marker.getTag().toString());
         return true;
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if(isConnected){
+            Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
+
+        }else
+        {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "Please Check Your Internet Connection", Snackbar.LENGTH_LONG).show();
+
+        }
     }
 
     private class Fetch_Parking_Spot extends AsyncTask<String, Void, String> {
@@ -561,6 +566,7 @@ public class MapDrawerActivity extends AppCompatActivity
             }
         }
     }
+
     public static Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

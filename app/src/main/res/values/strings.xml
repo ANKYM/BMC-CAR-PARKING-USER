@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">BMC CAR PARKING USER</string>
+    <string name="app_name">MCGM CAR PARKING USER</string>
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_map_drawer">BMC CAR PARKING</string>
+    <string name="title_activity_map_drawer">MCGM CAR PARKING</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
