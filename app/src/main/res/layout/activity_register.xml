@@ -25,9 +25,10 @@
         android:lines="1"
         android:maxLength="10"
         android:cursorVisible="true"
+        android:drawableLeft="@drawable/ic_mobile"
         app:met_baseColor="@color/colorPrimaryDark"
         app:met_floatingLabel="highlight"
-        app:met_floatingLabelText="Mobile No" />
+        app:met_floatingLabelText=" Mobile No" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/et_user_email_id"
@@ -37,13 +38,14 @@
         android:layout_below="@+id/et_user_mobile_no"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:drawableLeft="@drawable/ic_email"
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:maxLength="20"
         android:cursorVisible="true"
         app:met_baseColor="@color/colorPrimaryDark"
         app:met_floatingLabel="highlight"
-        app:met_floatingLabelText="Email" />
+        app:met_floatingLabelText=" Email" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/et_user_name"
@@ -54,12 +56,13 @@
         android:layout_centerVertical="true"
         android:hint="User Name"
         android:lines="1"
+        android:drawableLeft="@drawable/ic_user"
         android:inputType="textEmailAddress"
         android:maxLength="10"
         android:cursorVisible="true"
         app:met_baseColor="@color/colorPrimaryDark"
         app:met_floatingLabel="highlight"
-        app:met_floatingLabelText="User Name" />
+        app:met_floatingLabelText=" User Name" />
 
     <Button
         android:id="@+id/button_register"

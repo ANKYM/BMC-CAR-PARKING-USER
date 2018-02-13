@@ -6,7 +6,7 @@ package com.omkar.bmccarparkinguser.Helpers;
 
 public class ServiceDetails {
 
-    public final static String NAMESPACE = "http://tempuri.org/";
+    //public final static String NAMESPACE = "http://tempuri.org/";
     public final static String _URL = "http://106.201.229.140:3440/webservice.asmx";
     private final static String SOAP_ACTION = "http://tempuri.org/";
 
