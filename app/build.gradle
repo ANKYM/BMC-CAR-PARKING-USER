@@ -33,7 +33,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.cocosw:bottomsheet:1.+@aar'
-    implementation files('libs/ksoap2-android-2.5.2.jar')
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
-    compile 'com.loopj.android:android-async-http:1.4.9'
-}
+    // Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+
+    // JSON Parsing
+    compile 'com.google.code.gson:gson:2.6.1'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    }

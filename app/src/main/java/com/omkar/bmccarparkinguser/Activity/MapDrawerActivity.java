@@ -34,10 +34,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.gms.ads.internal.gmsg.HttpClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -60,10 +60,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
-import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.Model.ParkingSpot;
 import com.omkar.bmccarparkinguser.R;
 
@@ -71,10 +68,7 @@ import com.omkar.bmccarparkinguser.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,12 +83,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.msebera.android.httpclient.Header;
 
 
 public class MapDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, android.location.LocationListener, com.google.android.gms.location.LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener ,ConnectionDetector.ConnectionReceiverListener{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener, ConnectionDetector.ConnectionReceiverListener {
     //region LOCATION VARIABLES
     private static final String TAG = "Maps Activity";
     private LocationManager mLocationManager = null;
@@ -169,6 +162,8 @@ public class MapDrawerActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //new Fetch_Parking_Spot().execute();
         Fetch_Parking_Spot();
     }
 
@@ -193,7 +188,7 @@ public class MapDrawerActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.refresh) {
-           // new Fetch_Parking_Spot().execute();
+            Fetch_Parking_Spot();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -205,21 +200,17 @@ public class MapDrawerActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
-       if(id == R.id.menu_booking)
-       {
+        if (id == R.id.menu_booking) {
 
-       }else if(id == R.id.menu_rate)
-       {
+        } else if (id == R.id.menu_rate) {
 
-       }else if(id == R.id.menu_help)
-       {
-           Intent intent_helpActivity = new Intent(getApplicationContext(),AboutUsActivity.class);
-           startActivity(intent_helpActivity);
-       }else if(id == R.id.menu_about)
-       {
-            Intent intent_aboutUsActivity = new Intent(getApplicationContext(),AboutUsActivity.class);
+        } else if (id == R.id.menu_help) {
+            Intent intent_helpActivity = new Intent(getApplicationContext(), AboutUsActivity.class);
+            startActivity(intent_helpActivity);
+        } else if (id == R.id.menu_about) {
+            Intent intent_aboutUsActivity = new Intent(getApplicationContext(), AboutUsActivity.class);
             startActivity(intent_aboutUsActivity);
-       }
+        }
         return false;
     }
 
@@ -232,12 +223,12 @@ public class MapDrawerActivity extends AppCompatActivity
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-    Log.i("yop","top");
+        Log.i("yop", "top");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.i("yop","top");
+        Log.i("yop", "top");
 
     }
 
@@ -245,7 +236,7 @@ public class MapDrawerActivity extends AppCompatActivity
     public void onProviderDisabled(String provider) {
         buildLocationSettingsRequest();
         checkLocationSettings();
-        Log.i("yop","top");
+        Log.i("yop", "top");
 
     }
 
@@ -253,20 +244,20 @@ public class MapDrawerActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected - isConnected ...............: " + mGoogleApiClient.isConnected());
         startLocationUpdates();
-        Log.i("yop","top");
+        Log.i("yop", "top");
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i("yop","top");
+        Log.i("yop", "top");
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "Connection failed: " + connectionResult.toString());
-        Log.i("yop","top");
+        Log.i("yop", "top");
 
     }
 
@@ -470,7 +461,7 @@ public class MapDrawerActivity extends AppCompatActivity
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
-                       // new Fetch_Parking_Spot().execute();
+                        // new Fetch_Parking_Spot().execute();
                         break;
                     case Activity.RESULT_CANCELED:
                         Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Disable", Snackbar.LENGTH_LONG).show();
@@ -489,71 +480,37 @@ public class MapDrawerActivity extends AppCompatActivity
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        if(isConnected){
+        if (isConnected) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "GPS Enable", Snackbar.LENGTH_LONG).show();
 
-        }else
-        {
+        } else {
             Snackbar.make(getWindow().getDecorView().getRootView(), "Please Check Your Internet Connection", Snackbar.LENGTH_LONG).show();
 
         }
     }
 
-//    private class Fetch_Parking_Spot extends AsyncTask<String, Void, String> {
-//        ArrayList<ParkingSpot> all_parking_spots = new ArrayList<>();
-//
-//
-//        @Override
-//        protected void onPreExecute() {
-//            if (mMap != null) {
-//                mMap.clear();
-//            }
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//
-//            return "true";
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String b) {
-//            if (b.equals("true")) {
-//                List<Marker> all_spot_markes = new ArrayList<>();
-//                for (int i = 0; i < all_parking_spots.size(); i++) {
-//                    View marker_view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
-//                    TextView parking_space_avail = (TextView) marker_view.findViewById(R.id.parking_space_avail);
-//                    parking_space_avail.setText((all_parking_spots.get(i).getParkCapicity() - all_parking_spots.get(i).getParkVehicle()) + "");
-//                    MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLat()), Double.parseDouble(all_parking_spots.get(i).getLongi()))).title(all_parking_spots.get(i).getSpotName()).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapDrawerActivity.this, marker_view)));
-//                    Marker marker = mMap.addMarker(markerOptions);
-//                    marker.setTag(all_parking_spots.get(i));
-//                    all_spot_markes.add(marker);
-//                    marker.showInfoWindow();
-//
-//                }
-//                final CameraUpdate cu;
-//                LatLngBounds.Builder builder;
-//                builder = new LatLngBounds.Builder();
-//                for (Marker m : all_spot_markes) {
-//                    builder.include(m.getPosition());
-//                }
-//                int padding = 50;
-//                /**create the bounds from latlngBuilder to set into map camera*/
-//                LatLngBounds bounds = builder.build();
-//                /**create the camera with bounds and padding to set into map*/
-//                cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-//                /**call the map call back to know map is loaded or not*/
-//                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-//                    @Override
-//                    public void onMapLoaded() {
-//                        /**set animated zoom camera into map*/
-//                        mMap.animateCamera(cu);
-//
-//                    }
-//                });
-//            }
-//        }
-//    }
+    private class Fetch_Parking_Spot extends AsyncTask<String, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            if (mMap != null) {
+                mMap.clear();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String data) {
+            Log.i("Data", data);
+        }
+    }
 
     public static Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -822,31 +779,9 @@ public class MapDrawerActivity extends AppCompatActivity
         }
     }
 
-    private void Fetch_Parking_Spot()
-    {
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.post("http://192.168.1.11:3660/Service.svc/GetParkingLot", new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onStart() {
-                Log.i("Response" , "Start ");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                Log.i("Response" , response.toString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                Log.i("Response" , errorResponse.toString());
-            }
-
-            @Override
-            public void onRetry(int retryNo) {
-
-            }
-        });
+    private void Fetch_Parking_Spot() {
 
     }
+
+
 }
