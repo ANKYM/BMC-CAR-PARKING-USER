@@ -34,10 +34,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cocosw.bottomsheet.BottomSheet;
-import com.google.android.gms.ads.internal.gmsg.HttpClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -60,7 +60,11 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
+import com.omkar.bmccarparkinguser.Model.Client;
 import com.omkar.bmccarparkinguser.Model.ParkingSpot;
 import com.omkar.bmccarparkinguser.R;
 
@@ -74,6 +78,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
@@ -83,6 +88,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
 
 
 public class MapDrawerActivity extends AppCompatActivity
@@ -298,15 +304,15 @@ public class MapDrawerActivity extends AppCompatActivity
                 try {
                     final ParkingSpot parkingSpot = (ParkingSpot) marker.getTag();
                     int parking_avail;
-                    parking_avail = parkingSpot.getParkCapicity() - parkingSpot.getParkVehicle();
-                    new BottomSheet.Builder(MapDrawerActivity.this).title(parkingSpot.getSpotName() + " Parking available : " + parking_avail).sheet(R.menu.spot_menu_list).listener(new DialogInterface.OnClickListener() {
+                    parking_avail = parkingSpot.getParkedcapacity() - parkingSpot.getParkedvehicle();
+                    new BottomSheet.Builder(MapDrawerActivity.this).title(parkingSpot.getLotname() + " Parking available : " + parking_avail).sheet(R.menu.spot_menu_list).listener(new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.book:
                                     break;
                                 case R.id.navigate:
-                                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + parkingSpot.getLat() + "," + parkingSpot.getLongi());
+                                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + parkingSpot.getLatitude() + "," + parkingSpot.getLongitude());
                                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                     mapIntent.setPackage("com.google.android.apps.maps");
                                     startActivity(mapIntent);
@@ -486,29 +492,6 @@ public class MapDrawerActivity extends AppCompatActivity
         } else {
             Snackbar.make(getWindow().getDecorView().getRootView(), "Please Check Your Internet Connection", Snackbar.LENGTH_LONG).show();
 
-        }
-    }
-
-    private class Fetch_Parking_Spot extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            if (mMap != null) {
-                mMap.clear();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String data) {
-            Log.i("Data", data);
         }
     }
 
@@ -780,8 +763,95 @@ public class MapDrawerActivity extends AppCompatActivity
     }
 
     private void Fetch_Parking_Spot() {
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post("http://192.168.1.11:3660/Service.svc/GetParkingLot", new AsyncHttpResponseHandler() {
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+            }
+
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                super.onRetry(retryNo);
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    ArrayList<ParkingSpot> parkingSpotArrayList = new ArrayList<>();
+                    JSONObject jsonObject = null;
+                    jsonObject = new JSONObject(new String(responseBody));
+                    String jsonArrayString = jsonObject.getString("data");
+                    JSONArray jsonArray = new JSONArray(jsonArrayString);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject parkingSpot = (JSONObject) jsonArray.get(i);
+                        parkingSpotArrayList.add(new ParkingSpot(parkingSpot.getString("lotid"), parkingSpot.getString("lotname"), parkingSpot.getString("address"), parkingSpot.getString("latitude"), parkingSpot.getString("longitude"), parkingSpot.getInt("parkedcapacity"), parkingSpot.getInt("parkedvehicle")));
+                    }
+
+                    AddParkingLots(parkingSpotArrayList);
+
+                } catch (JSONException e) {
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Fetch_Parking_Spot();
+                        }
+                    }).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Fetch_Parking_Spot();
+                    }
+                }).show();
+            }
+        });
 
     }
 
 
+    private void AddParkingLots(ArrayList<ParkingSpot> all_parking_spots) {
+        List<Marker> all_spot_markes = new ArrayList<>();
+        for (int i = 0; i < all_parking_spots.size(); i++) {
+            View marker_view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
+            TextView parking_space_avail = (TextView) marker_view.findViewById(R.id.parking_space_avail);
+            parking_space_avail.setText((all_parking_spots.get(i).getParkedcapacity() - all_parking_spots.get(i).getParkedvehicle()) + "");
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLatitude()), Double.parseDouble(all_parking_spots.get(i).getLongitude()))).title(all_parking_spots.get(i).getLotname()).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapDrawerActivity.this, marker_view)));
+            Marker marker = mMap.addMarker(markerOptions);
+            marker.setTag(all_parking_spots.get(i));
+            all_spot_markes.add(marker);
+            marker.showInfoWindow();
+        }
+        final CameraUpdate cu;
+        LatLngBounds.Builder builder;
+        builder = new LatLngBounds.Builder();
+        for (Marker m : all_spot_markes) {
+            builder.include(m.getPosition());
+        }
+
+        int padding = 50;
+        LatLngBounds bounds = builder.build();
+        cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                mMap.animateCamera(cu);
+
+            }
+        });
+    }
 }

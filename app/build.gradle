@@ -34,10 +34,5 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.cocosw:bottomsheet:1.+@aar'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
-    // Retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-
-    // JSON Parsing
-    compile 'com.google.code.gson:gson:2.6.1'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    }
+    compile 'com.loopj.android:android-async-http:1.4.9'
+}

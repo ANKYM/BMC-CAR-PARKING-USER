@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/expanding-collection.iml" filepath="$PROJECT_DIR$/expanding-collection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../expanding-collection-android.iml" filepath="$PROJECT_DIR$/../expanding-collection-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../expanding-collection-full-example/expanding-collection-full-example.iml" filepath="$PROJECT_DIR$/../expanding-collection-full-example/expanding-collection-full-example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../expanding-collection-simple-example/expanding-collection-simple-example.iml" filepath="$PROJECT_DIR$/../expanding-collection-simple-example/expanding-collection-simple-example.iml" />
+    </modules>
+  </component>
+</project>

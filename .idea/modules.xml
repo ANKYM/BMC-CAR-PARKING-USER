@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BMC-CAR-PARKING-USER.iml" filepath="$PROJECT_DIR$/BMC-CAR-PARKING-USER.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/expanding-collection/expanding-collection.iml" filepath="$PROJECT_DIR$/expanding-collection/expanding-collection.iml" />
     </modules>
   </component>
 </project>

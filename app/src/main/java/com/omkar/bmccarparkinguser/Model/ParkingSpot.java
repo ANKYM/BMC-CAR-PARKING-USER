@@ -1,45 +1,45 @@
 package com.omkar.bmccarparkinguser.Model;
 
+
 /**
  * Created by omkar on 31-Jan-18.
  */
 
+
 public class ParkingSpot {
-    private String spotID;
-    private String spotName;
+
+    private String lotid;
+    private String lotname;
     private String address;
-    private String lat;
-    private String longi;
-    private int parkCapicity;
-    private int parkVehicle;
+    private String latitude;
+    private String longitude;
+    private Integer parkedcapacity;
+    private Integer parkedvehicle;
 
-    public ParkingSpot(String spotID, String spotName, String address, String lat, String longi, int parkCapicity, int parkVehicle) {
-        this.spotID = spotID;
-        this.spotName = spotName;
+    public ParkingSpot(String lotid, String lotname, String address, String latitude, String longitude, Integer parkedcapacity, Integer parkedvehicle) {
+        this.lotid = lotid;
+        this.lotname = lotname;
         this.address = address;
-        this.lat = lat;
-        this.longi = longi;
-        this.parkCapicity = parkCapicity;
-        this.parkVehicle = parkVehicle;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.parkedcapacity = parkedcapacity;
+        this.parkedvehicle = parkedvehicle;
     }
 
-    public ParkingSpot() {
+    public String getLotid() {
+        return lotid;
     }
 
-    public String getSpotID() {
-        return spotID;
+    public void setLotid(String lotid) {
+        this.lotid = lotid;
     }
 
-    public void setSpotID(String spotID) {
-        this.spotID = spotID;
+    public String getLotname() {
+        return lotname;
     }
 
-    public String getSpotName() {
-        return spotName;
-    }
-
-    public void setSpotName(String spotName) {
-        this.spotName = spotName;
+    public void setLotname(String lotname) {
+        this.lotname = lotname;
     }
 
     public String getAddress() {
@@ -50,35 +50,39 @@ public class ParkingSpot {
         this.address = address;
     }
 
-    public String getLat() {
-        return lat;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLat(String lat) {
-        this.lat = lat;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
-    public String getLongi() {
-        return longi;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLongi(String longi) {
-        this.longi = longi;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
-    public int getParkCapicity() {
-        return parkCapicity;
+    public Integer getParkedcapacity() {
+        return parkedcapacity;
     }
 
-    public void setParkCapicity(int parkCapicity) {
-        this.parkCapicity = parkCapicity;
+    public void setParkedcapacity(Integer parkedcapacity) {
+        this.parkedcapacity = parkedcapacity;
     }
 
-    public int getParkVehicle() {
-        return parkVehicle;
+    public Integer getParkedvehicle() {
+        return parkedvehicle;
     }
 
-    public void setParkVehicle(int parkVehicle) {
-        this.parkVehicle = parkVehicle;
+    public void setParkedvehicle(Integer parkedvehicle) {
+        this.parkedvehicle = parkedvehicle;
     }
+
 }
+
+
+
