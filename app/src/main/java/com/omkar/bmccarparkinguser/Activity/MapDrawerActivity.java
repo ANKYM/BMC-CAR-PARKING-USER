@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -13,12 +12,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
@@ -33,11 +30,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -62,11 +59,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.omkar.bmccarparkinguser.Adaptor.ParkingLotAdaptor;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
-import com.omkar.bmccarparkinguser.Model.Client;
-import com.omkar.bmccarparkinguser.Model.ParkingSpot;
+import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
 import org.json.JSONArray;
@@ -78,7 +75,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
@@ -107,8 +103,8 @@ public class MapDrawerActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     protected LocationSettingsRequest mLocationSettingsRequest;
     String mLastUpdateTime;
-
-
+    private static SlidingUpPanelLayout sliding_layout;
+    ListView list_view_parking_spot;
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(INTERVAL);
@@ -126,6 +122,9 @@ public class MapDrawerActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_drawer);
+        sliding_layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        list_view_parking_spot = findViewById(R.id.list_view_parking_spot);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (!isGooglePlayServicesAvailable()) {
@@ -148,17 +147,19 @@ public class MapDrawerActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.locationFab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
-                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-                        coordinate, 16);
-                mMap.animateCamera(location);
 
-            }
-        });
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.locationFab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
+//                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+//                        coordinate, 16);
+//                mMap.animateCamera(location);
+//
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -171,18 +172,42 @@ public class MapDrawerActivity extends AppCompatActivity
 
         //new Fetch_Parking_Spot().execute();
         Fetch_Parking_Spot();
+        sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+
+                switch (previousState)
+                {
+                    
+                }
+
+            }
+
+
+
+        });
     }
 
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (sliding_layout != null &&
+                (sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED )) {
+            sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else
             super.onBackPressed();
-        }
     }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -301,32 +326,36 @@ public class MapDrawerActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker) {
 
 
-                try {
-                    final ParkingSpot parkingSpot = (ParkingSpot) marker.getTag();
-                    int parking_avail;
-                    parking_avail = parkingSpot.getParkedcapacity() - parkingSpot.getParkedvehicle();
-                    new BottomSheet.Builder(MapDrawerActivity.this).title(parkingSpot.getLotname() + " Parking available : " + parking_avail).sheet(R.menu.spot_menu_list).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.book:
-                                    break;
-                                case R.id.navigate:
-                                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + parkingSpot.getLatitude() + "," + parkingSpot.getLongitude());
-                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                                    mapIntent.setPackage("com.google.android.apps.maps");
-                                    startActivity(mapIntent);
-                                    break;
-                            }
-                        }
-                    }).show();
-                } catch (Exception ex) {
-                    Log.e("Marker Cliked error", ex.toString());
-                }
+//                try {
+//                    final ParkingLot parkingSpot = (ParkingLot) marker.getTag();
+//                    int parking_avail;
+//                    parking_avail = parkingSpot.getParkedcapacity() - parkingSpot.getParkedvehicle();
+//                    new BottomSheet.Builder(MapDrawerActivity.this).title(parkingSpot.getLotname() + " Parking available : " + parking_avail).sheet(R.menu.spot_menu_list).listener(new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            switch (which) {
+//                                case R.id.book:
+//                                    break;
+//                                case R.id.navigate:
+//                                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + parkingSpot.getLatitude() + "," + parkingSpot.getLongitude());
+//                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+//                                    mapIntent.setPackage("com.google.android.apps.maps");
+//                                    startActivity(mapIntent);
+//                                    break;
+//                            }
+//                        }
+//                    }).show();
+//                } catch (Exception ex) {
+//                    Log.e("Marker Cliked error", ex.toString());
+//                }
+
+
 
                 return false;
             }
         });
+
+
     }
 
     @Override
@@ -788,17 +817,17 @@ public class MapDrawerActivity extends AppCompatActivity
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
-                    ArrayList<ParkingSpot> parkingSpotArrayList = new ArrayList<>();
+                    ArrayList<ParkingLot> parkingLotArrayList = new ArrayList<>();
                     JSONObject jsonObject = null;
                     jsonObject = new JSONObject(new String(responseBody));
                     String jsonArrayString = jsonObject.getString("data");
                     JSONArray jsonArray = new JSONArray(jsonArrayString);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject parkingSpot = (JSONObject) jsonArray.get(i);
-                        parkingSpotArrayList.add(new ParkingSpot(parkingSpot.getString("lotid"), parkingSpot.getString("lotname"), parkingSpot.getString("address"), parkingSpot.getString("latitude"), parkingSpot.getString("longitude"), parkingSpot.getInt("parkedcapacity"), parkingSpot.getInt("parkedvehicle")));
+                        parkingLotArrayList.add(new ParkingLot(parkingSpot.getString("lotid"), parkingSpot.getString("lotname"), parkingSpot.getString("address"), parkingSpot.getString("latitude"), parkingSpot.getString("longitude"), parkingSpot.getInt("parkedcapacity"), parkingSpot.getInt("parkedvehicle")));
                     }
 
-                    AddParkingLots(parkingSpotArrayList);
+                    AddParkingLots(parkingLotArrayList);
 
                 } catch (JSONException e) {
                     Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
@@ -824,7 +853,7 @@ public class MapDrawerActivity extends AppCompatActivity
     }
 
 
-    private void AddParkingLots(ArrayList<ParkingSpot> all_parking_spots) {
+    private void AddParkingLots(ArrayList<ParkingLot> all_parking_spots) {
         List<Marker> all_spot_markes = new ArrayList<>();
         for (int i = 0; i < all_parking_spots.size(); i++) {
             View marker_view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
@@ -853,5 +882,15 @@ public class MapDrawerActivity extends AppCompatActivity
 
             }
         });
+
+        if(all_parking_spots.size()>0)
+        {
+            ParkingLotAdaptor parkingLotAdaptor = new ParkingLotAdaptor(MapDrawerActivity.this,R.layout.parking_lot_list_item,all_parking_spots);
+            list_view_parking_spot.setAdapter(parkingLotAdaptor);
+            sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+
+
+        }
+
     }
 }

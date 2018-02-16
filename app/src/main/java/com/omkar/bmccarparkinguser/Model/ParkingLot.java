@@ -6,7 +6,7 @@ package com.omkar.bmccarparkinguser.Model;
  */
 
 
-public class ParkingSpot {
+public class ParkingLot {
 
     private String lotid;
     private String lotname;
@@ -16,7 +16,7 @@ public class ParkingSpot {
     private Integer parkedcapacity;
     private Integer parkedvehicle;
 
-    public ParkingSpot(String lotid, String lotname, String address, String latitude, String longitude, Integer parkedcapacity, Integer parkedvehicle) {
+    public ParkingLot(String lotid, String lotname, String address, String latitude, String longitude, Integer parkedcapacity, Integer parkedvehicle) {
         this.lotid = lotid;
         this.lotname = lotname;
         this.address = address;
