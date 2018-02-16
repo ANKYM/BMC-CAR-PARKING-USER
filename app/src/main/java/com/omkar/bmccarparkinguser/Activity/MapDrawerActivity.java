@@ -112,6 +112,7 @@ public class MapDrawerActivity extends AppCompatActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    RelativeLayout relative_layout_head ;
     //endregion
 
 
@@ -124,6 +125,7 @@ public class MapDrawerActivity extends AppCompatActivity
         setContentView(R.layout.activity_map_drawer);
         sliding_layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        relative_layout_head = findViewById(R.id.relative_layout_head);
         list_view_parking_spot = findViewById(R.id.list_view_parking_spot);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -181,11 +183,22 @@ public class MapDrawerActivity extends AppCompatActivity
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
 
-                switch (previousState)
+                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED)
                 {
-                    
-                }
+                    relative_layout_head.setVisibility(View.VISIBLE);
 
+                }else if (newState == SlidingUpPanelLayout.PanelState.ANCHORED)
+                {
+
+                }
+                else if (newState == SlidingUpPanelLayout.PanelState.HIDDEN)
+                {
+
+                }
+                else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED)
+                {
+                    relative_layout_head.setVisibility(View.GONE);
+                }
             }
 
 
@@ -888,8 +901,6 @@ public class MapDrawerActivity extends AppCompatActivity
             ParkingLotAdaptor parkingLotAdaptor = new ParkingLotAdaptor(MapDrawerActivity.this,R.layout.parking_lot_list_item,all_parking_spots);
             list_view_parking_spot.setAdapter(parkingLotAdaptor);
             sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-
-
         }
 
     }
