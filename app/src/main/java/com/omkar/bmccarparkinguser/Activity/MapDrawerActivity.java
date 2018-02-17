@@ -16,6 +16,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.github.clans.fab.FloatingActionButton;
+
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
@@ -105,6 +108,7 @@ public class MapDrawerActivity extends AppCompatActivity
     String mLastUpdateTime;
     private static SlidingUpPanelLayout sliding_layout;
     ListView list_view_parking_spot;
+
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(INTERVAL);
@@ -112,7 +116,9 @@ public class MapDrawerActivity extends AppCompatActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    RelativeLayout relative_layout_head ;
+    RelativeLayout relative_layout_head;
+    Toolbar toolbar;
+    FloatingActionButton fab;
     //endregion
 
 
@@ -127,7 +133,7 @@ public class MapDrawerActivity extends AppCompatActivity
         sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         relative_layout_head = findViewById(R.id.relative_layout_head);
         list_view_parking_spot = findViewById(R.id.list_view_parking_spot);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (!isGooglePlayServicesAvailable()) {
             finish();
@@ -151,17 +157,17 @@ public class MapDrawerActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.locationFab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
-//                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-//                        coordinate, 16);
-//                mMap.animateCamera(location);
-//
-//            }
-//        });
+        fab = (FloatingActionButton) findViewById(R.id.fab_location);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LatLng coordinate = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()); //Store these lat lng values somewhere. These should be constant.
+                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                        coordinate, 16);
+                mMap.animateCamera(location);
+
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -183,24 +189,21 @@ public class MapDrawerActivity extends AppCompatActivity
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
 
-                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED)
-                {
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     relative_layout_head.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.VISIBLE);
 
-                }else if (newState == SlidingUpPanelLayout.PanelState.ANCHORED)
-                {
-
-                }
-                else if (newState == SlidingUpPanelLayout.PanelState.HIDDEN)
-                {
-
-                }
-                else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED)
-                {
+                } else if (newState == SlidingUpPanelLayout.PanelState.ANCHORED) {
+                    fab.setVisibility(View.VISIBLE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.HIDDEN) {
+                    fab.setVisibility(View.VISIBLE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                     relative_layout_head.setVisibility(View.GONE);
+                    fab.setVisibility(View.GONE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+                    fab.setVisibility(View.GONE);
                 }
             }
-
 
 
         });
@@ -211,15 +214,13 @@ public class MapDrawerActivity extends AppCompatActivity
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (sliding_layout != null &&
-                (sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED )) {
+                (sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || sliding_layout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
             sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else
             super.onBackPressed();
     }
-
-
 
 
     @Override
@@ -361,7 +362,6 @@ public class MapDrawerActivity extends AppCompatActivity
 //                } catch (Exception ex) {
 //                    Log.e("Marker Cliked error", ex.toString());
 //                }
-
 
 
                 return false;
@@ -896,9 +896,8 @@ public class MapDrawerActivity extends AppCompatActivity
             }
         });
 
-        if(all_parking_spots.size()>0)
-        {
-            ParkingLotAdaptor parkingLotAdaptor = new ParkingLotAdaptor(MapDrawerActivity.this,R.layout.parking_lot_list_item,all_parking_spots);
+        if (all_parking_spots.size() > 0) {
+            ParkingLotAdaptor parkingLotAdaptor = new ParkingLotAdaptor(MapDrawerActivity.this, R.layout.parking_lot_list_item, all_parking_spots);
             list_view_parking_spot.setAdapter(parkingLotAdaptor);
             sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }

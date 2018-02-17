@@ -21,6 +21,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_map_drawer" />
-
+<com.github.clans.fab.FloatingActionButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_marginBottom="65dp"
+    android:layout_marginRight="5dp"
+    android:src="@drawable/ic_location"
+    app:fab_colorNormal="@color/colorPrimary"
+    android:id="@+id/fab_location"/>
 
 </android.support.design.widget.CoordinatorLayout>

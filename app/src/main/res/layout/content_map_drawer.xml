@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorBackground"
             android:clickable="true"
+            android:layout_marginTop="65dp"
             android:focusable="false"
             android:orientation="vertical">
 
