@@ -10,17 +10,31 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
 import com.omkar.bmccarparkinguser.Helpers.Encryption;
+import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -72,12 +86,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                         if (userEmail_editText.getText().toString().trim().length() > 10 && isValidEmailId(userEmail_editText.getText().toString().trim())) {
                             if (userName_editText.getText().toString().trim().length() > 5) {
-                                if (Register_User(mobileNo_editText.getText().toString().trim(), userName_editText.getText().toString().trim(), userEmail_editText.getText().toString().trim())) {
-                                    Intent loginIntent = new Intent(getApplicationContext(), MapDrawerActivity.class);
-                                    startActivity(loginIntent);
-                                    finish();
-                                } else {
-                                    Snackbar.make(v, "Something Went Wrong", Snackbar.LENGTH_LONG).show();
+                                try {
+                                    Register_User(mobileNo_editText.getText().toString().trim(), userName_editText.getText().toString().trim(), userEmail_editText.getText().toString().trim());
+                                } catch (JSONException e) {
+                                    Snackbar.make(v, e.toString(), Snackbar.LENGTH_LONG).show();
+                                } catch (UnsupportedEncodingException e) {
+                                    Snackbar.make(v, e.toString(), Snackbar.LENGTH_LONG).show();
                                 }
                             } else {
                                 Snackbar.make(v, "Please Enter Valid User Name", Snackbar.LENGTH_LONG).show();
@@ -107,15 +121,64 @@ public class RegisterActivity extends AppCompatActivity {
                 + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$").matcher(email).matches();
     }
 
-    private Boolean Register_User(String userMobileNo, String userName, String userEmail) {
-        userDetails = getSharedPreferences(user_log_prefs, MODE_PRIVATE);
-        SharedPreferences.Editor session_editor = userDetails.edit();
-        session_editor.putString("userMobileNo", encryption.encryptOrNull(userMobileNo));
-        session_editor.putString("userName", encryption.encryptOrNull(userName));
-        session_editor.putString("userEmail", encryption.encryptOrNull(userEmail));
-        session_editor.putBoolean("isRegister", true);
-        session_editor.commit();
-        return true;
+    private void Register_User(final String userMobileNo, final String userName, final String userEmail) throws JSONException, UnsupportedEncodingException {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("Mobile_no", userMobileNo);
+        requestParams.put("User_id", userName);
+        requestParams.put("UserEmail", userEmail);
+        StringEntity entity = new StringEntity(requestParams.toString());
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post(getApplicationContext(), "http://192.168.1.11:3660/Service.svc/InsertClientUserDetails", entity, "application/json", new AsyncHttpResponseHandler() {
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+            }
+
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                super.onRetry(retryNo);
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.i("Error", statusCode + "");
+                Log.i("Error", responseBody.toString());
+                userDetails = getSharedPreferences(user_log_prefs, MODE_PRIVATE);
+                SharedPreferences.Editor session_editor = userDetails.edit();
+                session_editor.putString("userMobileNo", encryption.encryptOrNull(userMobileNo));
+                session_editor.putString("userName", encryption.encryptOrNull(userName));
+                session_editor.putString("userEmail", encryption.encryptOrNull(userEmail));
+                session_editor.putBoolean("isRegister", true);
+                session_editor.commit();
+                Intent loginIntent = new Intent(getApplicationContext(), MapDrawerActivity.class);
+                startActivity(loginIntent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.i("Error", statusCode + "");
+                Log.i("Error", error.toString());
+                Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Dismiss", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }).show();
+            }
+        });
+
+
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -149,8 +212,7 @@ public class RegisterActivity extends AppCompatActivity {
                             && perms.get(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
                             && perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                             && perms.get(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                    }else
-                    {
+                    } else {
                         finish();
                     }
                     return;

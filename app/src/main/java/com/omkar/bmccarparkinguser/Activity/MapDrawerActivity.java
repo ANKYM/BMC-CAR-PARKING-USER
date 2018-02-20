@@ -72,6 +72,9 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 import java.io.BufferedReader;
@@ -87,7 +90,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.protocol.BasicHttpContext;
+import cz.msebera.android.httpclient.protocol.HttpContext;
 
 
 public class MapDrawerActivity extends AppCompatActivity
@@ -98,7 +110,7 @@ public class MapDrawerActivity extends AppCompatActivity
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 100;
     private static final float LOCATION_DISTANCE = 10f;
-    Location mLastLocation;
+    private static Location mLastLocation;
     protected static final int REQUEST_CHECK_SETTINGS = 0x3;
     private static final long INTERVAL = 1000 * 10;
     private static final long FASTEST_INTERVAL = 1000 * 5;
@@ -248,7 +260,8 @@ public class MapDrawerActivity extends AppCompatActivity
         if (id == R.id.menu_booking) {
 
         } else if (id == R.id.menu_rate) {
-
+            Intent intent_helpActivity = new Intent(getApplicationContext(), RateChartActivity.class);
+            startActivity(intent_helpActivity);
         } else if (id == R.id.menu_help) {
             Intent intent_helpActivity = new Intent(getApplicationContext(), AboutUsActivity.class);
             startActivity(intent_helpActivity);
@@ -902,5 +915,41 @@ public class MapDrawerActivity extends AppCompatActivity
             sliding_layout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }
 
+    }
+
+    public static  String getDistanceOnRoad(double prelatitute, double prelongitude) {
+        String result_in_kms = "";
+        String url = "http://maps.google.com/maps/api/directions/xml?origin="
+                + mLastLocation.getLongitude() + "," + mLastLocation.getLongitude()+ "&destination=" + prelatitute
+                + "," + prelongitude + "&sensor=false&units=metric";
+        String tag[] = { "text" };
+        HttpResponse response = null;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpContext localContext = new BasicHttpContext();
+            HttpPost httpPost = new HttpPost(url);
+            response = httpClient.execute(httpPost, localContext);
+            InputStream is = response.getEntity().getContent();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            Document doc = builder.parse(is);
+            if (doc != null) {
+                NodeList nl;
+                ArrayList args = new ArrayList();
+                for (String s : tag) {
+                    nl = doc.getElementsByTagName(s);
+                    if (nl.getLength() > 0) {
+                        Node node = nl.item(nl.getLength() - 1);
+                        args.add(node.getTextContent());
+                    } else {
+                        args.add(" - ");
+                    }
+                }
+                result_in_kms = String.format("%s", args.get(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result_in_kms;
     }
 }

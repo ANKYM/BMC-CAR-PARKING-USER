@@ -36,4 +36,7 @@ dependencies {
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.sothree.slidinguppanel:library:3.4.0'
+    compile 'de.codecrafters.tableview:tableview:2.8.0'
+    compile 'com.pnikosis:materialish-progress:1.7'
+
 }
