@@ -1,12 +1,14 @@
 package com.omkar.bmccarparkinguser.Model;
 
 
+import java.io.Serializable;
+
 /**
  * Created by omkar on 31-Jan-18.
  */
 
 
-public class ParkingLot {
+public class ParkingLot implements Serializable {
 
     private String lotid;
     private String lotname;

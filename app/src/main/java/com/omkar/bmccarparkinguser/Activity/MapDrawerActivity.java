@@ -885,7 +885,7 @@ public class MapDrawerActivity extends AppCompatActivity
             View marker_view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
             TextView parking_space_avail = (TextView) marker_view.findViewById(R.id.parking_space_avail);
             parking_space_avail.setText((all_parking_spots.get(i).getParkedcapacity() - all_parking_spots.get(i).getParkedvehicle()) + "");
-            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLatitude()), Double.parseDouble(all_parking_spots.get(i).getLongitude()))).title(all_parking_spots.get(i).getLotname()).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapDrawerActivity.this, marker_view)));
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(Double.parseDouble(all_parking_spots.get(i).getLatitude()), Double.parseDouble(all_parking_spots.get(i).getLongitude()))).title(all_parking_spots.get(i).getLotname().toUpperCase()).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapDrawerActivity.this, marker_view)));
             Marker marker = mMap.addMarker(markerOptions);
             marker.setTag(all_parking_spots.get(i));
             all_spot_markes.add(marker);

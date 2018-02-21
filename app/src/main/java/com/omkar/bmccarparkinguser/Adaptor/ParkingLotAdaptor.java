@@ -14,10 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.omkar.bmccarparkinguser.Activity.BookParkingActivity;
 import com.omkar.bmccarparkinguser.Activity.MapDrawerActivity;
 import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -39,7 +41,7 @@ public class ParkingLotAdaptor extends ArrayAdapter {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
         parking_lot holder = null;
         if (row == null) {
@@ -58,14 +60,16 @@ public class ParkingLotAdaptor extends ArrayAdapter {
             holder = (parking_lot) row.getTag();
         }
         final ParkingLot parkingLot = parkingLots.get(position);
-        holder.tv_lot_name.setText(parkingLot.getLotname());
-        holder.tv_address.setText(parkingLot.getAddress());
+        holder.tv_lot_name.setText(parkingLot.getLotname().toUpperCase());
+        holder.tv_address.setText(parkingLot.getAddress().toUpperCase());
        // holder.tv_toatal_distance.setText(MapDrawerActivity.getDistanceOnRoad(Double.parseDouble(parkingLot.getLatitude()),Double.parseDouble(parkingLot.getLongitude())));
         holder.tv_parking_space.setText((parkingLot.getParkedcapacity() - parkingLot.getParkedvehicle()) + "");
         holder.iv_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            //Intent book_intent = new Intent(context,)
+                Intent intent= new Intent(context, BookParkingActivity.class);
+                intent.putExtra("parkingLot", parkingLot);
+                context.startActivity(intent);
             }
         });
         holder.iv_direction.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +86,6 @@ public class ParkingLotAdaptor extends ArrayAdapter {
     }
 
     private static class parking_lot {
-
         TextView tv_lot_name;
         TextView tv_address;
         TextView tv_parking_space;
