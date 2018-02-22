@@ -8,75 +8,95 @@
     tools:context="com.omkar.bmccarparkinguser.Activity.RegisterActivity">
 
     <ImageView
+        android:id="@+id/iv_mcgm"
         android:layout_width="150dp"
-        android:layout_height="200dp"
+        android:layout_height="180dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:src="@drawable/mcgm"
-        android:layout_centerHorizontal="true"/>
+        android:src="@drawable/mcgm" />
 
-    <com.rengwuxian.materialedittext.MaterialEditText
+    <com.github.florent37.materialtextfield.MaterialTextField
         android:id="@+id/et_user_mobile_no"
         android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_mcgm"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:hint="Mobile No"
-        android:inputType="number"
-        android:lines="1"
-        android:maxLength="10"
-        android:cursorVisible="true"
-        android:drawableLeft="@drawable/ic_mobile"
-        app:met_baseColor="@color/colorPrimaryDark"
-        app:met_floatingLabel="highlight"
-        app:met_floatingLabelText=" Mobile No" />
+        app:mtf_backgroundColor="@color/colorPrimary"
+        app:mtf_image="@drawable/ic_mobile"
+        app:mtf_labelColor="@color/colorPrimaryDark">
 
-    <com.rengwuxian.materialedittext.MaterialEditText
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cursorVisible="true"
+            android:hint="Mobile No"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="10"
+            android:textColor="@color/colorBackground"
+            android:textSize="15sp" />
+
+    </com.github.florent37.materialtextfield.MaterialTextField>
+
+    <com.github.florent37.materialtextfield.MaterialTextField
         android:id="@+id/et_user_email_id"
         android:layout_width="300dp"
-        android:lines="1"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/et_user_mobile_no"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:drawableLeft="@drawable/ic_email"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:maxLength="20"
-        android:cursorVisible="true"
-        app:met_baseColor="@color/colorPrimaryDark"
-        app:met_floatingLabel="highlight"
-        app:met_floatingLabelText=" Email" />
+        app:mtf_backgroundColor="@color/colorPrimary"
+        app:mtf_image="@drawable/ic_email"
+        app:mtf_labelColor="@color/colorPrimaryDark">
 
-    <com.rengwuxian.materialedittext.MaterialEditText
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cursorVisible="true"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:lines="1"
+            android:maxLength="20"
+            android:textColor="@color/colorBackground"
+            android:textSize="15sp" />
+
+    </com.github.florent37.materialtextfield.MaterialTextField>
+
+    <com.github.florent37.materialtextfield.MaterialTextField
         android:id="@+id/et_user_name"
         android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/et_user_email_id"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:hint="User Name"
-        android:lines="1"
-        android:drawableLeft="@drawable/ic_user"
-        android:inputType="textEmailAddress"
-        android:maxLength="10"
-        android:cursorVisible="true"
-        app:met_baseColor="@color/colorPrimaryDark"
-        app:met_floatingLabel="highlight"
-        app:met_floatingLabelText=" User Name" />
+        app:mtf_backgroundColor="@color/colorPrimary"
+        app:mtf_image="@drawable/ic_username"
+        app:mtf_labelColor="@color/colorPrimaryDark">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cursorVisible="true"
+            android:hint="User Name"
+            android:inputType="textEmailAddress"
+            android:lines="1"
+            android:maxLength="10"
+            android:textColor="@color/colorBackground"
+            android:textSize="15sp" />
+
+    </com.github.florent37.materialtextfield.MaterialTextField>
 
     <Button
         android:id="@+id/button_register"
         android:layout_width="260dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_below="@+id/et_user_name"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_marginTop="20dp"
         android:background="@color/colorPrimary"
-        android:text="Register"
-        android:bottomRightRadius="10dp"
         android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+        android:text="Register"
+        android:textColor="@color/colorBackground"
         android:topLeftRadius="10dp"
-        android:topRightRadius="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/colorBackground" />
+        android:topRightRadius="10dp" />
 </RelativeLayout>

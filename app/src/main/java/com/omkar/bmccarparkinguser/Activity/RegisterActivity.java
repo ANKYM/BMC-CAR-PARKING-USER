@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.github.florent37.materialtextfield.MaterialTextField;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -39,8 +40,9 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class RegisterActivity extends AppCompatActivity {
 
     //Region DECLARATION
-    EditText mobileNo_editText, userName_editText, userEmail_editText;
+
     Button register_button;
+    MaterialTextField mobileNo_editText,userName_editText, userEmail_editText;
     //endregion
 
 
@@ -82,12 +84,12 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ConnectionDetector.isInternetConnection(getApplicationContext())) {
 
-                    if (mobileNo_editText.getText().toString().trim().length() == 10) {
+                    if (mobileNo_editText.getEditText().getText().toString().trim().length() == 10) {
 
-                        if (userEmail_editText.getText().toString().trim().length() > 10 && isValidEmailId(userEmail_editText.getText().toString().trim())) {
-                            if (userName_editText.getText().toString().trim().length() > 5) {
+                        if (userEmail_editText.getEditText().getText().toString().trim().length() > 10 && isValidEmailId(userEmail_editText.getEditText().getText().toString().trim())) {
+                            if (userName_editText.getEditText().getText().toString().trim().length() > 5) {
                                 try {
-                                    Register_User(mobileNo_editText.getText().toString().trim(), userName_editText.getText().toString().trim(), userEmail_editText.getText().toString().trim());
+                                    Register_User(mobileNo_editText.getEditText().getText().toString().trim(), userName_editText.getEditText().getText().toString().trim(), userEmail_editText.getEditText().getText().toString().trim());
                                 } catch (JSONException e) {
                                     Snackbar.make(v, e.toString(), Snackbar.LENGTH_LONG).show();
                                 } catch (UnsupportedEncodingException e) {
@@ -136,7 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onStart() {
-                super.onStart();
+
             }
 
             @Override

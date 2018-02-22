@@ -41,4 +41,6 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:3.4.0'
     compile 'de.codecrafters.tableview:tableview:2.8.0'
     compile 'com.pnikosis:materialish-progress:1.7'
+    compile 'com.github.florent37:materialtextfield:1.0.7'
+    compile 'com.journeyapps:zxing-android-embedded:3.4.0'
 }
