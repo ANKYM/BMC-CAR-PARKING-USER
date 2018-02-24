@@ -4,26 +4,158 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context="com.omkar.bmccarparkinguser.Activity.BookParkingActivity">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <RelativeLayout
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <com.rengwuxian.materialedittext.MaterialEditText
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:met_floatingLabel="highlight"
-            app:met_clearButton="true"
-            android:elevation="4dp"
-            android:hint="Vehicle No"
-            app:met_floatingLabelText="Vehicle No"
-            android:id="@+id/et_vehicle_no"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="20dp"/>
-    </RelativeLayout>
-</ScrollView>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:elevation="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/back_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/back_bg" />
+
+                    <TextView
+                        android:id="@+id/tv_lotName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/back_bg"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_lotName"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="Parking Available"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                        <TextView
+                            android:id="@+id/tv_parking_space"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:elevation="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/et_vehicle_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:elevation="4dp"
+                        android:hint="Vehicle No"
+                        android:inputType="textCapCharacters"
+                        app:met_clearButton="true"
+                        app:met_floatingLabel="highlight"
+                        app:met_floatingLabelText="Vehicle No" />
+
+                    <TextView
+                        android:id="@+id/just"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/et_vehicle_no"
+                        android:layout_alignRight="@id/et_vehicle_no"
+                        android:layout_below="@id/et_vehicle_no"
+                        android:layout_marginBottom="10dp"
+                        android:text="Do not use space or special character when entering Vehicle Number Eg : MH01AD1501" />
+
+                    <Spinner
+                        android:id="@+id/spinner_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/et_vehicle_no"
+                        android:layout_alignRight="@id/et_vehicle_no"
+                        android:layout_below="@id/just"
+                        android:layout_marginBottom="10dp"
+                        android:elevation="4dp" />
+
+                    <!--<io.blackbox_vision.datetimepickeredittext.view.DatePickerEditText-->
+                    <!--android:id="@+id/datePickerEditText"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignLeft="@id/et_vehicle_no"-->
+                    <!--android:layout_alignRight="@id/et_vehicle_no"-->
+                    <!--android:layout_below="@id/spinner_type"-->
+                    <!--android:layout_marginBottom="10dp"-->
+                    <!--android:hint="Select Date" />-->
+
+                    <io.blackbox_vision.datetimepickeredittext.view.TimePickerEditText
+                        android:id="@+id/timePickerEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/et_vehicle_no"
+                        android:layout_alignRight="@id/et_vehicle_no"
+                        android:layout_below="@id/spinner_type"
+                        android:layout_marginBottom="10dp"
+                        android:hint="Select Time" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/et_vehicle_no"
+                        android:layout_alignRight="@id/et_vehicle_no"
+                        android:layout_below="@id/timePickerEditText"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/colorPrimary"
+                        android:bottomLeftRadius="10dp"
+                        android:bottomRightRadius="10dp"
+                        android:text="Book"
+                        android:id="@+id/button_book"
+                        android:textColor="@color/colorBackground"
+                        android:topLeftRadius="10dp"
+                        android:topRightRadius="10dp" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

@@ -66,6 +66,7 @@ import com.omkar.bmccarparkinguser.Adaptor.ParkingLotAdaptor;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
 import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
@@ -120,6 +121,7 @@ public class MapDrawerActivity extends AppCompatActivity
     String mLastUpdateTime;
     private static SlidingUpPanelLayout sliding_layout;
     ListView list_view_parking_spot;
+    //ProgressWheel  progressWheel ;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -146,6 +148,7 @@ public class MapDrawerActivity extends AppCompatActivity
         relative_layout_head = findViewById(R.id.relative_layout_head);
         list_view_parking_spot = findViewById(R.id.list_view_parking_spot);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //progressWheel = new ProgressWheel(getApplicationContext());
         setSupportActionBar(toolbar);
         if (!isGooglePlayServicesAvailable()) {
             finish();
@@ -828,6 +831,8 @@ public class MapDrawerActivity extends AppCompatActivity
             @Override
             public void onStart() {
                 super.onStart();
+               // progressWheel.setBarColor(R.color.colorAccent);
+                //progressWheel.spin();
             }
 
             @Override
@@ -838,6 +843,7 @@ public class MapDrawerActivity extends AppCompatActivity
             @Override
             public void onCancel() {
                 super.onCancel();
+                //progressWheel.stopSpinning();
             }
 
             @Override
@@ -863,6 +869,7 @@ public class MapDrawerActivity extends AppCompatActivity
                         }
                     }).show();
                 }
+               // progressWheel.stopSpinning();
             }
 
             @Override
@@ -873,7 +880,9 @@ public class MapDrawerActivity extends AppCompatActivity
                         Fetch_Parking_Spot();
                     }
                 }).show();
+               // progressWheel.stopSpinning();
             }
+
         });
 
     }
