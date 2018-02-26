@@ -3,6 +3,8 @@ package com.omkar.bmccarparkinguser.Activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -66,7 +68,6 @@ import com.omkar.bmccarparkinguser.Adaptor.ParkingLotAdaptor;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
 import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
@@ -121,7 +122,7 @@ public class MapDrawerActivity extends AppCompatActivity
     String mLastUpdateTime;
     private static SlidingUpPanelLayout sliding_layout;
     ListView list_view_parking_spot;
-    //ProgressWheel  progressWheel ;
+    private Dialog dialog;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -830,9 +831,7 @@ public class MapDrawerActivity extends AppCompatActivity
 
             @Override
             public void onStart() {
-                super.onStart();
-               // progressWheel.setBarColor(R.color.colorAccent);
-                //progressWheel.spin();
+                dialog = ProgressDialog.show(MapDrawerActivity.this, "Please Wait", "Fetching Current Parking Lot", true);
             }
 
             @Override
@@ -842,8 +841,7 @@ public class MapDrawerActivity extends AppCompatActivity
 
             @Override
             public void onCancel() {
-                super.onCancel();
-                //progressWheel.stopSpinning();
+                dialog.dismiss();
             }
 
             @Override
@@ -869,18 +867,18 @@ public class MapDrawerActivity extends AppCompatActivity
                         }
                     }).show();
                 }
-               // progressWheel.stopSpinning();
+                dialog.dismiss();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
                 Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Fetch_Parking_Spot();
                     }
                 }).show();
-               // progressWheel.stopSpinning();
             }
 
         });
@@ -926,12 +924,12 @@ public class MapDrawerActivity extends AppCompatActivity
 
     }
 
-    public static  String getDistanceOnRoad(double prelatitute, double prelongitude) {
+    public static String getDistanceOnRoad(double prelatitute, double prelongitude) {
         String result_in_kms = "";
         String url = "http://maps.google.com/maps/api/directions/xml?origin="
-                + mLastLocation.getLongitude() + "," + mLastLocation.getLongitude()+ "&destination=" + prelatitute
+                + mLastLocation.getLongitude() + "," + mLastLocation.getLongitude() + "&destination=" + prelatitute
                 + "," + prelongitude + "&sensor=false&units=metric";
-        String tag[] = { "text" };
+        String tag[] = {"text"};
         HttpResponse response = null;
         try {
             HttpClient httpClient = new DefaultHttpClient();

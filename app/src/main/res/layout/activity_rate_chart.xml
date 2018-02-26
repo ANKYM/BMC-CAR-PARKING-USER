@@ -7,12 +7,12 @@
     tools:context="com.omkar.bmccarparkinguser.Activity.RateChartActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:layout_marginEnd="50dp"
         android:layout_marginStart="50dp"
-        android:id="@+id/swipeRefreshLayout">
+        android:layout_marginTop="50dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -25,8 +25,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorAccent"
-                table:tableView_headerColor="@color/colorPrimary"
-                table:tableView_columnCount="2" />
+                table:tableView_columnCount="2"
+                table:tableView_headerColor="@color/colorPrimary" />
 
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>

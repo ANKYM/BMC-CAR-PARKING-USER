@@ -95,6 +95,7 @@
                         android:elevation="4dp"
                         android:hint="Vehicle No"
                         android:inputType="textCapCharacters"
+                        android:maxLength="8"
                         app:met_clearButton="true"
                         app:met_floatingLabel="highlight"
                         app:met_floatingLabelText="Vehicle No" />
@@ -119,38 +120,41 @@
                         android:layout_marginBottom="10dp"
                         android:elevation="4dp" />
 
-                    <!--<io.blackbox_vision.datetimepickeredittext.view.DatePickerEditText-->
-                    <!--android:id="@+id/datePickerEditText"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignLeft="@id/et_vehicle_no"-->
-                    <!--android:layout_alignRight="@id/et_vehicle_no"-->
-                    <!--android:layout_below="@id/spinner_type"-->
-                    <!--android:layout_marginBottom="10dp"-->
-                    <!--android:hint="Select Date" />-->
-
-                    <io.blackbox_vision.datetimepickeredittext.view.TimePickerEditText
-                        android:id="@+id/timePickerEditText"
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/mtf_card"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@id/et_vehicle_no"
-                        android:layout_alignRight="@id/et_vehicle_no"
-                        android:layout_below="@id/spinner_type"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/spinner_type"
+                        android:layout_margin="5dp"
                         android:layout_marginBottom="10dp"
-                        android:hint="Select Time" />
+                        android:elevation="4dp">
+
+                        <TextView
+                            android:id="@+id/tv_booking_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignLeft="@id/et_vehicle_no"
+                            android:layout_alignRight="@id/et_vehicle_no"
+                            android:background="@color/colorPrimary"
+                            android:gravity="center"
+                            android:text="Please Select Date"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                            android:textColor="@color/colorBackground" />
+                    </android.support.v7.widget.CardView>
+
 
                     <Button
+                        android:id="@+id/button_book"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignLeft="@id/et_vehicle_no"
                         android:layout_alignRight="@id/et_vehicle_no"
-                        android:layout_below="@id/timePickerEditText"
+                        android:layout_below="@+id/mtf_card"
                         android:layout_marginBottom="10dp"
                         android:background="@color/colorPrimary"
                         android:bottomLeftRadius="10dp"
                         android:bottomRightRadius="10dp"
                         android:text="Book"
-                        android:id="@+id/button_book"
                         android:textColor="@color/colorBackground"
                         android:topLeftRadius="10dp"
                         android:topRightRadius="10dp" />

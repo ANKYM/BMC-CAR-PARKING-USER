@@ -67,7 +67,8 @@
         <activity android:name=".Activity.AboutUsActivity" />
         <activity android:name=".Activity.HelpActivity" />
         <activity android:name=".Activity.RateChartActivity" />
-        <activity android:name=".Activity.BookParkingActivity"></activity>
+        <activity android:name=".Activity.BookParkingActivity" />
+        <activity android:name=".Activity.QRCodeActivity"></activity>
     </application>
 
 </manifest>
