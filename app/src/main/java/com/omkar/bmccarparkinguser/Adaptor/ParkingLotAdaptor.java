@@ -62,8 +62,16 @@ public class ParkingLotAdaptor extends ArrayAdapter {
         final ParkingLot parkingLot = parkingLots.get(position);
         holder.tv_lot_name.setText(parkingLot.getLotname().toUpperCase());
         holder.tv_address.setText(parkingLot.getAddress().toUpperCase());
-       // holder.tv_toatal_distance.setText(MapDrawerActivity.getDistanceOnRoad(Double.parseDouble(parkingLot.getLatitude()),Double.parseDouble(parkingLot.getLongitude())));
-        holder.tv_parking_space.setText((parkingLot.getParkedcapacity() - parkingLot.getParkedvehicle()) + "");
+
+        if(parkingLot.getDistance()<1000)
+        {
+            holder.tv_toatal_distance.setText(parkingLot.getDistance() + " m");
+
+        }else
+        {
+            holder.tv_toatal_distance.setText((String.format("%.2f",(float)parkingLot.getDistance()/1000)) + " Km");
+        }
+        holder.tv_parking_space.setText("Avalible Parking : " + (parkingLot.getParkedcapacity() - parkingLot.getParkedvehicle()) + "");
         holder.iv_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

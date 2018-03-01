@@ -36,13 +36,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.clans:fab:1.6.4'
-    compile 'com.cocosw:bottomsheet:1.+@aar'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.sothree.slidinguppanel:library:3.4.0'
     compile 'de.codecrafters.tableview:tableview:2.8.0'
     compile 'com.github.florent37:materialtextfield:1.0.7'
-    compile 'com.journeyapps:zxing-android-embedded:3.4.0'
     compile 'com.github.Kunzisoft:Android-SwitchDateTimePicker:1.9'
     compile 'com.github.kenglxn.QRGen:android:2.4.0'
 

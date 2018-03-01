@@ -17,8 +17,9 @@ public class ParkingLot implements Serializable {
     private String longitude;
     private Integer parkedcapacity;
     private Integer parkedvehicle;
+    private Integer distance;
 
-    public ParkingLot(String lotid, String lotname, String address, String latitude, String longitude, Integer parkedcapacity, Integer parkedvehicle) {
+    public ParkingLot(String lotid, String lotname, String address, String latitude, String longitude, Integer parkedcapacity, Integer parkedvehicle,Integer distance) {
         this.lotid = lotid;
         this.lotname = lotname;
         this.address = address;
@@ -26,6 +27,15 @@ public class ParkingLot implements Serializable {
         this.longitude = longitude;
         this.parkedcapacity = parkedcapacity;
         this.parkedvehicle = parkedvehicle;
+        this.distance = distance;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Integer distance) {
+        this.distance = distance;
     }
 
     public String getLotid() {

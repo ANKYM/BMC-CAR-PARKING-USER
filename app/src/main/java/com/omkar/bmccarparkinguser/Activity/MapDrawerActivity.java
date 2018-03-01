@@ -83,10 +83,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +102,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.protocol.BasicHttpContext;
 import cz.msebera.android.httpclient.protocol.HttpContext;
@@ -123,6 +127,7 @@ public class MapDrawerActivity extends AppCompatActivity
     private static SlidingUpPanelLayout sliding_layout;
     ListView list_view_parking_spot;
     private Dialog dialog;
+    private boolean isLocationGet = false;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -195,7 +200,16 @@ public class MapDrawerActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //new Fetch_Parking_Spot().execute();
-        Fetch_Parking_Spot();
+        try {
+            if(mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0){
+                Fetch_Parking_Spot();
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         sliding_layout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -249,7 +263,15 @@ public class MapDrawerActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.refresh) {
-            Fetch_Parking_Spot();
+            try {
+                if(mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0){
+                    Fetch_Parking_Spot();
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -262,7 +284,8 @@ public class MapDrawerActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.menu_booking) {
-
+            Intent intent_helpActivity = new Intent(getApplicationContext(), MyBookingActivity.class);
+            startActivity(intent_helpActivity);
         } else if (id == R.id.menu_rate) {
             Intent intent_helpActivity = new Intent(getApplicationContext(), RateChartActivity.class);
             startActivity(intent_helpActivity);
@@ -281,6 +304,17 @@ public class MapDrawerActivity extends AppCompatActivity
         Log.d(TAG, "Firing onLocationChanged..............................................");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mLastLocation = location;
+        try {
+            if((mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0)&& !isLocationGet){
+                Fetch_Parking_Spot();
+                isLocationGet = true;
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -821,9 +855,13 @@ public class MapDrawerActivity extends AppCompatActivity
         }
     }
 
-    private void Fetch_Parking_Spot() {
+    private void Fetch_Parking_Spot() throws UnsupportedEncodingException, JSONException {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("oLat", mLastLocation.getLatitude());
+        requestParams.put("oLong", mLastLocation.getLongitude());
+        StringEntity entity = new StringEntity(requestParams.toString());
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post("http://192.168.1.11:3660/Service.svc/GetParkingLot", new AsyncHttpResponseHandler() {
+        client.post(getApplicationContext(),"http://192.168.1.11:3660/Service.svc/GetParkingLot", entity, "application/json", new AsyncHttpResponseHandler() {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);
@@ -854,16 +892,30 @@ public class MapDrawerActivity extends AppCompatActivity
                     JSONArray jsonArray = new JSONArray(jsonArrayString);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject parkingSpot = (JSONObject) jsonArray.get(i);
-                        parkingLotArrayList.add(new ParkingLot(parkingSpot.getString("lotid"), parkingSpot.getString("lotname"), parkingSpot.getString("address"), parkingSpot.getString("latitude"), parkingSpot.getString("longitude"), parkingSpot.getInt("parkedcapacity"), parkingSpot.getInt("parkedvehicle")));
+                        parkingLotArrayList.add(new ParkingLot(parkingSpot.getString("lotid"), parkingSpot.getString("lotname"), parkingSpot.getString("address"), parkingSpot.getString("latitude"), parkingSpot.getString("longitude"), parkingSpot.getInt("parkedcapacity"), parkingSpot.getInt("parkedvehicle"),parkingSpot.getInt("Distance")));
                     }
 
+                    Collections.sort(parkingLotArrayList, new Comparator<ParkingLot>() {
+                        @Override
+                        public int compare(ParkingLot s1, ParkingLot s2) {
+                            return s1.getDistance().compareTo(s2.getDistance());
+                        }
+                    });
                     AddParkingLots(parkingLotArrayList);
 
                 } catch (JSONException e) {
                     Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Fetch_Parking_Spot();
+                            try {
+                                if(mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0){
+                                    Fetch_Parking_Spot();
+                                }
+                            } catch (UnsupportedEncodingException e1) {
+                                e1.printStackTrace();
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
                         }
                     }).show();
                 }
@@ -876,7 +928,15 @@ public class MapDrawerActivity extends AppCompatActivity
                 Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Fetch_Parking_Spot();
+                        try {
+                            if(mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0){
+                                Fetch_Parking_Spot();
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }).show();
             }

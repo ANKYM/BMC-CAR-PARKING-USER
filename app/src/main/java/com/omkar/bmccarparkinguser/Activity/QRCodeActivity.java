@@ -35,7 +35,7 @@ public class QRCodeActivity extends AppCompatActivity {
         encryption = Encryption.getDefault("Key", "random", new byte[16]);
         tokenData = getIntent().getStringExtra("tokenData");
         String EncreptedData = encryption.encryptOrNull(tokenData);
-        Bitmap myBitmap = QRCode.from(EncreptedData).withSize(300,300).withColor(Color.RED,Color.BLUE).bitmap();
+        Bitmap myBitmap = QRCode.from(EncreptedData).withSize(300,300).withColor(Color.RED,Color.WHITE).bitmap();
         iv_qr_code.setImageBitmap(myBitmap);
     }
 }
