@@ -31,6 +31,7 @@ public class ParkingLot implements Serializable {
     }
 
     public Integer getDistance() {
+
         return distance;
     }
 

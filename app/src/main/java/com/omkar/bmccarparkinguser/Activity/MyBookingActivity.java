@@ -17,6 +17,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.omkar.bmccarparkinguser.Adaptor.MyBookingAdaptor;
 import com.omkar.bmccarparkinguser.Helpers.Encryption;
+import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.Model.MyBooking;
 import com.omkar.bmccarparkinguser.R;
 
@@ -69,7 +70,7 @@ public class MyBookingActivity extends AppCompatActivity {
         requestParams.put("UserEmail", userEmail);
         StringEntity entity = new StringEntity(requestParams.toString());
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(getApplicationContext(), "http://192.168.1.11:3660/Service.svc/GetAllParkingDetailsOfUser", entity, "application/json", new AsyncHttpResponseHandler() {
+        client.post(getApplicationContext(), ServiceDetails._URL +"GetAllParkingDetailsOfUser", entity, "application/json", new AsyncHttpResponseHandler() {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);

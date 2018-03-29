@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.R;
 
 import org.json.JSONArray;
@@ -38,7 +39,7 @@ public class RateChartActivity extends AppCompatActivity implements  SwipeRefres
 
     private void Fetch_Parking_Rate() {
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post("http://192.168.1.11:3660/Service.svc/GetParkingRate", new AsyncHttpResponseHandler() {
+        client.post(ServiceDetails._URL +"GetParkingRate", new AsyncHttpResponseHandler() {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);

@@ -18,6 +18,7 @@ import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.omkar.bmccarparkinguser.Helpers.Encryption;
+import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -158,7 +159,7 @@ public class BookParkingActivity extends AppCompatActivity {
         requestParams.put("Booking_duration", tv_booking_time.getText().toString());
         StringEntity entity = new StringEntity(requestParams.toString());
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(getApplicationContext(), "http://192.168.1.11:3660/Service.svc/InsertBookedVehiclesDetails", entity, "application/json", new AsyncHttpResponseHandler() {
+        client.post(getApplicationContext(), ServiceDetails._URL +"InsertBookedVehiclesDetails", entity, "application/json", new AsyncHttpResponseHandler() {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);

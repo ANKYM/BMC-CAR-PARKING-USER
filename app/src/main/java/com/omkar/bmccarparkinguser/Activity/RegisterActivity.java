@@ -1,6 +1,8 @@
 package com.omkar.bmccarparkinguser.Activity;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,23 +15,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.github.florent37.materialtextfield.MaterialTextField;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.omkar.bmccarparkinguser.Helpers.ConnectionDetector;
 import com.omkar.bmccarparkinguser.Helpers.Encryption;
-import com.omkar.bmccarparkinguser.Model.ParkingLot;
+import com.omkar.bmccarparkinguser.Helpers.ServiceDetails;
 import com.omkar.bmccarparkinguser.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -43,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     Button register_button;
     MaterialTextField mobileNo_editText,userName_editText, userEmail_editText;
+    private Dialog dialog;
     //endregion
 
 
@@ -130,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
         requestParams.put("UserEmail", userEmail);
         StringEntity entity = new StringEntity(requestParams.toString());
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(getApplicationContext(), "http://192.168.1.11:3660/Service.svc/InsertClientUserDetails", entity, "application/json", new AsyncHttpResponseHandler() {
+        client.post(getApplicationContext(), ServiceDetails._URL +"InsertClientUserDetails", entity, "application/json", new AsyncHttpResponseHandler() {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);
@@ -138,6 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onStart() {
+                dialog = ProgressDialog.show(RegisterActivity.this, "Please Wait", "Please Wait", true);
 
             }
 
@@ -148,13 +148,12 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                super.onCancel();
+                dialog.dismiss();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.i("Error", statusCode + "");
-                Log.i("Error", responseBody.toString());
+                dialog.dismiss();
                 userDetails = getSharedPreferences(user_log_prefs, MODE_PRIVATE);
                 SharedPreferences.Editor session_editor = userDetails.edit();
                 session_editor.putString("userMobileNo", encryption.encryptOrNull(userMobileNo));
@@ -169,8 +168,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.i("Error", statusCode + "");
-                Log.i("Error", error.toString());
+                dialog.dismiss();
                 Snackbar.make(getWindow().getDecorView().getRootView(), "Something Went Wrong.", Snackbar.LENGTH_LONG).setAction("Dismiss", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
