@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.omkar.bmccarparkinguser.Helpers.Encryption;
+import com.omkar.bmccarparkinguser.Model.ParkingLot;
 import com.omkar.bmccarparkinguser.R;
 
 import net.glxn.qrgen.android.QRCode;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -34,8 +39,14 @@ public class QRCodeActivity extends AppCompatActivity {
         iv_qr_code = findViewById(R.id.iv_qr_code);
         encryption = Encryption.getDefault("Key", "random", new byte[16]);
         tokenData = getIntent().getStringExtra("tokenData");
-        String EncreptedData = encryption.encryptOrNull(tokenData);
-        Bitmap myBitmap = QRCode.from(EncreptedData).withSize(300,300).withColor(Color.RED,Color.WHITE).bitmap();
+        String EncryptedData = encryption.encryptOrNull(tokenData);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("EncryptedData",EncryptedData);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Bitmap myBitmap = QRCode.from(jsonObject.toString()).withSize(300,300).withColor(Color.RED,Color.WHITE).bitmap();
         iv_qr_code.setImageBitmap(myBitmap);
     }
 }

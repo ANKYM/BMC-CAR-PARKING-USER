@@ -95,7 +95,7 @@
                         android:elevation="4dp"
                         android:hint="Vehicle No"
                         android:inputType="textCapCharacters"
-                        android:maxLength="8"
+                        android:maxLength="10"
                         app:met_clearButton="true"
                         app:met_floatingLabel="highlight"
                         app:met_floatingLabelText="Vehicle No" />

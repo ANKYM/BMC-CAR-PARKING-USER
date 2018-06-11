@@ -240,6 +240,19 @@ public class MapDrawerActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            if(mLastLocation.getLongitude()!=0.0 || mLastLocation.getLongitude()!=0.0){
+                Fetch_Parking_Spot();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onBackPressed() {

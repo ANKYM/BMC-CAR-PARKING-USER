@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class MyBooking implements Serializable {
     String vehicleNo;
     String lotId;
+    String lotName;
     String ownerId;
     String ownerMobileNo;
     String vehicleType;
@@ -16,10 +17,12 @@ public class MyBooking implements Serializable {
     String bookingDuration;
     Integer bookConfrimed;
     String bookingToken;
+    Integer bookingStatus;
 
-    public MyBooking(String vehicleNo, String lotId, String ownerId, String ownerMobileNo, String vehicleType, String bookingTime, String bookingDuration, Integer bookConfrimed, String bookingToken) {
+    public MyBooking(String vehicleNo, String lotId, String lotName, String ownerId, String ownerMobileNo, String vehicleType, String bookingTime, String bookingDuration, Integer bookConfrimed, String bookingToken,Integer bookingStatus) {
         this.vehicleNo = vehicleNo;
         this.lotId = lotId;
+        this.lotName=lotName;
         this.ownerId = ownerId;
         this.ownerMobileNo = ownerMobileNo;
         this.vehicleType = vehicleType;
@@ -27,6 +30,23 @@ public class MyBooking implements Serializable {
         this.bookingDuration = bookingDuration;
         this.bookConfrimed = bookConfrimed;
         this.bookingToken = bookingToken;
+        this.bookingStatus=bookingStatus;
+    }
+
+    public Integer getBookingStatus() {
+        return bookingStatus;
+    }
+
+    public void setBookingStatus(Integer bookingStatus) {
+        this.bookingStatus = bookingStatus;
+    }
+
+    public String getLotName() {
+        return lotName;
+    }
+
+    public void setLotName(String lotName) {
+        this.lotName = lotName;
     }
 
     public String getVehicleNo() {

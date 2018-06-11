@@ -93,7 +93,7 @@ public class BookParkingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (vehicleEditText.getText().toString().length() > 7) {
+                if (vehicleEditText.getText().toString().length() > 9) {
                     if (!spinner_type.getSelectedItem().equals("Select Vehicle type")) {
                         try {
                             Book_vehicle();
@@ -107,7 +107,7 @@ public class BookParkingActivity extends AppCompatActivity {
                         Snackbar.make(getWindow().getDecorView().getRootView(), "Please Select Vehicle Type", Snackbar.LENGTH_LONG).show();
                     }
                 } else {
-                    Snackbar.make(getWindow().getDecorView().getRootView(), "Please Enter 8 Vehicle Number", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "Please Enter 10 Digit  Vehicle Number", Snackbar.LENGTH_LONG).show();
                 }
 
             }
@@ -136,8 +136,6 @@ public class BookParkingActivity extends AppCompatActivity {
                         tv_booking_time.setText(dateTimeDialogFragment.getDay() + "/" + dateTimeDialogFragment.getMonth() + "/" + dateTimeDialogFragment.getYear() + " " + dateTimeDialogFragment.getHourOfDay() + ":" + dateTimeDialogFragment.getMinute());
 
                     }
-
-
                 });
                 dateTimeDialogFragment.show(getSupportFragmentManager(), "dialog_time");
             }
