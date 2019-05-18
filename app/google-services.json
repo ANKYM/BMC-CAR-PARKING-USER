@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "133520579863",
+    "firebase_url": "https://bmc-car-parking-1516268124977.firebaseio.com",
+    "project_id": "bmc-car-parking--1516268124977",
+    "storage_bucket": "bmc-car-parking--1516268124977.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133520579863:android:e256d3d2d76ca35a",
+        "android_client_info": {
+          "package_name": "com.omkar.bmccarparkinguser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "133520579863-n2g2c2qkmdt8nt6ctfo4vb8qs9i57oht.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "133520579863-n2g2c2qkmdt8nt6ctfo4vb8qs9i57oht.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcANy_MbgbIJBALiJvVeeyC9bW0DkrL4M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

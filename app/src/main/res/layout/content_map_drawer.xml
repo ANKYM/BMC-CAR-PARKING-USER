@@ -20,7 +20,6 @@
         sothree:umanoOverlay="true"
         sothree:umanoPanelHeight="65dp"
         sothree:umanoParallaxOffset="100dp"
-        sothree:umanoScrollableView="@+id/listview_archive_complaint"
         sothree:umanoShadowHeight="4dp">
 
         <LinearLayout

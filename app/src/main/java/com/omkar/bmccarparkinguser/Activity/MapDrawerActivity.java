@@ -26,6 +26,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -142,6 +143,18 @@ public class MapDrawerActivity extends AppCompatActivity
     FloatingActionButton fab;
     //endregion
 
+
+    private static final String KEY_MAP_STATE = "com.esri.MapState";
+
+    public String[] layer_arr;
+
+    public String zone_tap;
+    public MotionEvent ehandletap;
+    public String attErrMsg = "";
+
+    private enum EditMode {
+        NONE, POINT, POLYLINE, POLYGON, SAVING
+    }
 
     private GoogleMap mMap;
 
@@ -998,7 +1011,7 @@ public class MapDrawerActivity extends AppCompatActivity
 
     }
 
-    public static String getDistanceOnRoad(double prelatitute, double prelongitude) {
+    public static String getDistanceOnRoad(double prelatitute, double prelongitude)  {
         String result_in_kms = "";
         String url = "http://maps.google.com/maps/api/directions/xml?origin="
                 + mLastLocation.getLongitude() + "," + mLastLocation.getLongitude() + "&destination=" + prelatitute

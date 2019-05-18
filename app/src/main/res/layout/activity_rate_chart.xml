@@ -10,24 +10,25 @@
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="50dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="50dp">
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:elevation="5dp"
             android:layout_centerVertical="true">
 
-            <de.codecrafters.tableview.TableView xmlns:table="http://schemas.android.com/apk/res-auto"
+            <de.codecrafters.tableview.TableView
+                xmlns:table="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/tableView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="400dp"
                 android:background="@color/colorAccent"
                 table:tableView_columnCount="2"
                 table:tableView_headerColor="@color/colorPrimary" />
-
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

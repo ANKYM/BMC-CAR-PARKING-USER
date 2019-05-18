@@ -1,5 +1,7 @@
 package com.omkar.bmccarparkinguser.Activity;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,23 +26,30 @@ import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter;
 public class RateChartActivity extends AppCompatActivity implements  SwipeRefreshLayout.OnRefreshListener {
     TableView tableView ;
     SwipeRefreshLayout swipeRefreshLayout;
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_chart);
         tableView = (TableView) findViewById(R.id.tableView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        final String[] TABLE_HEADERS = { "HRS", "Amount (Rs)"};
-        tableView.setHeaderAdapter(new SimpleTableHeaderAdapter(RateChartActivity.this,TABLE_HEADERS));
         Fetch_Parking_Rate();
         swipeRefreshLayout.setOnRefreshListener(this);
-        //endregion
+        final String[] TABLE_HEADERS = { "HRS", "Amount (Rs)"};
+        tableView.setHeaderAdapter(new SimpleTableHeaderAdapter(RateChartActivity.this,TABLE_HEADERS));
+        tableView.setHeaderBackground(R.color.colorBackGround1);
+        Fetch_Parking_Rate();
+        swipeRefreshLayout.setOnRefreshListener(this);
+
     }
 
     private void Fetch_Parking_Rate() {
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(ServiceDetails._URL +"GetParkingRate", new AsyncHttpResponseHandler() {
+        client.get(ServiceDetails._URL +"GetParkingRate", new AsyncHttpResponseHandler() {
             @Override
+
+
+
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);
             }
